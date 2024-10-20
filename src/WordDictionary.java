@@ -10,7 +10,7 @@ public class WordDictionary {
         loadWords();
     }
 
-    // 加载单词库的方法
+
     private void loadWords() {
         try (BufferedReader reader = new BufferedReader(new FileReader("src/5000_words.txt"))) {
             String line;
