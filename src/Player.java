@@ -89,7 +89,10 @@ public class Player {
         }
     }
 
-    // 重置重新抽牌次数
+    public int getRerollCount(){
+        return rerollCount;
+    }
+
     public void resetRerollCount() {
         this.rerollCount = 3;
     }
