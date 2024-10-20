@@ -6,6 +6,8 @@ public class Player {
     private int remainingTurns; // turns left
     private int currentScore; // current score
     private int wins; // round of wins
+
+    private int rerollCount; //how many times of reroll left
     private boolean isCurrentPlayer;
 
 
@@ -16,6 +18,7 @@ public class Player {
         this.currentScore = 0;
         this.wins = 0;
         this.isCurrentPlayer = false; // not play in current round
+        this.rerollCount=3;
     }
 
     // get player name
@@ -78,5 +81,16 @@ public class Player {
 
     public void setCurrentPlayer(boolean isCurrentPlayer) {
         this.isCurrentPlayer = isCurrentPlayer;
+    }
+
+    public void useReroll() {
+        if (rerollCount > 0) {
+            rerollCount--;
+        }
+    }
+
+    // 重置重新抽牌次数
+    public void resetRerollCount() {
+        this.rerollCount = 3;
     }
 }
