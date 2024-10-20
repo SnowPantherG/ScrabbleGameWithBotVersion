@@ -26,6 +26,7 @@ public class WordDictionaryTest {
     public void testInvalidWord() {
         assertFalse(dictionary.isEnglishWord("poepqwe"));
         assertFalse(dictionary.isEnglishWord("qwertyuiop"));
+        assertFalse(dictionary.isEnglishWord("12332654"));
     }
 
 
