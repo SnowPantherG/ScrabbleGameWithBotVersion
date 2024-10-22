@@ -2,6 +2,20 @@ import java.io.*;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ *
+ * The WordDictionary class represents a dictionary of English words that can be used
+ * to validate words and provide random English words. It loads the words from a file containing
+ * a list of common English words.
+ *
+ * @version v1, 19th October, 2024
+ * @author Shenhao Gong
+ *
+ * @version v2, 21st October, 2024
+ * @author Shenhao Gong
+ * change 5000_common_word to 10000_common_words
+ *
+ */
 public class WordDictionary {
     private Set<String> words;
 
@@ -12,7 +26,7 @@ public class WordDictionary {
 
 
     private void loadWords() {
-        try (BufferedReader reader = new BufferedReader(new FileReader("src/5000_words.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("src/10000_common_words.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 words.add(line.trim().toLowerCase());

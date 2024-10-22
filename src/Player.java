@@ -1,5 +1,21 @@
 import java.util.*;
 
+/**
+ * The Player class represents a player in a Scrabble game.
+ * It contains attributes such as the player's name, tiles (cards), remaining turns, current score, number of wins, reroll count, and
+ * whether it is currently their turn. The class provides methods to manage tiles, update scores, track wins, manage turns, and
+ * determine if a player can form a word with their tiles.
+ *
+ * @version v1, 20th October, 2024
+ * @author Shenhao Gong
+ *
+ *
+ * @version v1.1 21th October 2024
+ * @author Shenhao Gong
+ * added canFormWord() and removeTilesForWord()
+ *
+ */
+
 public class Player {
     private String name;
     private List<Tile> tiles; // playing card
@@ -11,14 +27,14 @@ public class Player {
     private boolean isCurrentPlayer;
 
 
-    public Player(String name, int remainingTurns) {
+    public Player(String name) {
         this.name = name;
         this.tiles = new ArrayList<Tile>(); //
-        this.remainingTurns = remainingTurns;
+        this.remainingTurns = 3;
         this.currentScore = 0;
         this.wins = 0;
         this.isCurrentPlayer = false; // not play in current round
-        this.rerollCount=3;
+        this.rerollCount=10;
     }
 
     // get player name
@@ -96,4 +112,42 @@ public class Player {
     public void resetRerollCount() {
         this.rerollCount = 3;
     }
+
+
+    //Check if player has the tiles for the target word
+    public boolean canFormWord(String word) {
+        // Create a copy of the player's tiles for validation
+        List<Tile> tilesCopy = new ArrayList<>(tiles);
+
+        // Iterate over each letter in the word to check if the player has enough tiles
+        for (char letter : word.toCharArray()) {
+            boolean tileFound = false;
+            for (Tile tile : tilesCopy) {
+                if (tile.getLetter() == letter) {
+                    tilesCopy.remove(tile);
+                    tileFound = true;
+                    break;
+                }
+            }
+            if (!tileFound) {
+                return false; // If a required tile is not found, the player cannot form the word
+            }
+        }
+
+        return true; // If all letters are found, the player can form the word
+    }
+
+    //after the player get the score, remove used tiles from players hand
+    public void removeTilesForWord(String word) {
+        for (char letter : word.toCharArray()) {
+            for (Tile tile : tiles) {
+                if (tile.getLetter() == letter) {
+                    tiles.remove(tile);
+                    break;
+                }
+            }
+        }
+    }
+
+
 }
