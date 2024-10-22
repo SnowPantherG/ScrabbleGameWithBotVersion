@@ -99,7 +99,6 @@ public class GameController {
         return wantToQuit;
     }
 
-
     private void handlePlay(Command command) {
         if(command.hasSecondWord()) {
             int players = (int) command.getSecondWord();
