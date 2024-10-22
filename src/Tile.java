@@ -1,5 +1,14 @@
 import java.util.HashMap;
 
+
+/**
+ * The tile class is a representation of a single tile that is used in scrabble game.
+ * Every tile is assigned a unique letter and a corresponding point value.
+ * The class includes functions for getting the letter and value of a tile, as well as for comparing two tiles by their letters.
+ *
+ * @author Rafid Mehedi Hasan
+ * @version V1.0 21st October, 2024
+ */
 public class Tile {
     private char letter;  // The letter on the tile ('A', 'B', ....., 'Z')
     private int value;    // The integer value of the tile
@@ -37,7 +46,11 @@ public class Tile {
       tvalues.put('Z', 10);
     }
 
-    // Constructor to initialize the Tile with a letter
+    /**
+     * Constructor to initialize the Tile
+     * @param letter The character on the tile
+     */
+
     public Tile(char letter) {
         this.letter = Character.toUpperCase(letter);  // Convert to uppercase for consistency
         if (tvalues.containsKey(letter)) {
@@ -47,32 +60,52 @@ public class Tile {
         }
     }
 
-    // Getter for the letter on the tile
+    /**
+     * Gets the letter on the tile
+     * @return The letter on the tile
+     */
+
     public char getLetter() {
         return letter;
     }
+    /**
+     * Method gets the value of the tile
+     * @return The integer value of the tile
+     */
 
-    // Getter for the value of the tile
     public int getValue() {
         return value;
     }
 
-    // Simple method to compare tiles by their letter
+    /**
+     * Compare two tiles by their letter
+     * @param other The other tile to compare to
+     * @return True if both tiles have same alphabet, false otherwise
+     */
     public boolean sameTiles(Tile other) {
         return this.letter == other.letter;
     }
-    
+
+    /**
+     * Compare ths tile object to another object to determine if they are equal
+     * comparision is based on alphabet on tile
+     * @param obj The object to be compared with this tile
+     * @return true if obj is same instance as this tile or if obj is a tile and have same alphabets; false otherwise
+     */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof Tile)) return false;
-        Tile other = (Tile) obj;
+        if (this == obj) return true; // check if both reference points to same object
+        if (!(obj instanceof Tile)) return false; // check if obj is instance of tile, if it is not return false
+        Tile other = (Tile) obj; // cast obj as tile and compare the letter field
         return this.letter == other.letter;
     }
 
-    // String representation of the tile (letter only)
+    /**
+     * String representation of the tile (letter only)
+     * @return The letter on the tile as a string
+     */
+
     public String toString() {
         return String.valueOf(letter);
     }
 }
-
