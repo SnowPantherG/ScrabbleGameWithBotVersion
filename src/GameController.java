@@ -8,7 +8,7 @@
 
 public class GameController {
     private Parser parser;
-    private ScrabbleGame game;
+    private ScrabbleGameA game;
     private GameView view;
     private Integer mode; //0 setup 1 play 2 word placement
     /**
@@ -83,15 +83,18 @@ public class GameController {
             handleExchange(command);
         }
         else if (commandWord.equals("word") && mode == 1) {
-            mode = 1;
+            mode = 2;
             handleWord(command);
         }
         else if (commandWord.equals("place") && mode == 2) {
             mode = 1;
-            handlePlace(command);
+            handleWord(command);
         }
-        else if (commandWord.equals("location") && mode == 2) {
-            handleLocation(command);
+        else if (commandWord.equals("locationX") && mode == 2) {
+            handleWord(command);
+        }
+        else if (commandWord.equals("locationY") && mode == 2) {
+            handleWord(command);
         }
         else if (commandWord.equals("quit")) {
             wantToQuit = handleQuit(command);
@@ -125,16 +128,26 @@ public class GameController {
     }
 
     private void handleWord(Command command) {
-        game.word()
+
+        if(command.hasSecondWord()) {
+            String commandWord = command.getCommandWord();
+            String word;
+            String direction;
+            int x;
+            int y;
+            if (commandWord.equals("word")) {
+                word = command.getSecondWord();
+            } else if (commandWord.equals("place")) {
+                direction = command.getSecondWord();
+            } else if (commandWord.equals("locationX")) {
+                x = (int) command.getSecondWord();
+            }else if (commandWord.equals("locationY")) {
+                y = (int) command.getSecondWord();
+            }
+            game.word(word, direction, x, y);
+        }
     }
 
-    private void handlePlace(Command command) {
-        game.place()
-    }
-
-    private void handleLocation(Command command) {
-        game.location()
-    }
 
     /**
      * "Quit" was entered. Check the rest of the command to see
