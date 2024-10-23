@@ -62,7 +62,7 @@ public class GameController {
             handlePlay(command);
         }
         else if (commandWord.equals("player") && mode == 0 ) {
-            handlePlayer(command);
+            view.printPlayer();
         }
         else if (commandWord.equals("rules")) {
             view.printRules();
@@ -111,11 +111,6 @@ public class GameController {
         }
 
     }
-
-    private void handlePlayer(Command command) {
-        game.player()
-    }
-
 
     private void handleChallenge(Command command) {
         game.challenge()

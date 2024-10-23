@@ -6,18 +6,31 @@ public class Rack {
 
     public Rack() {
         tiles = new ArrayList<>();
-        // Initialize the rack with 7 tiles
-        for (int i = 0; i < 7; i++) {
-            tiles.add(new Tile()); // Replace with actual Tile creation logic
-        }
     }
-
+    public void addTile(Tile newTile) {
+        if (tiles.size() < 7) {
+            tiles.add(newTile);
+        }else{throw new IllegalStateException("The rack is full");}
+    }
+    public void removeTile(Tile newTile) {
+        if (tiles.size() > 0) {
+            tiles.remove(newTile);
+        }else{throw new IllegalStateException("The rack is empty");}
+    }
+    public void removeTile(int index) {
+        if (tiles.size() > 0) {
+            tiles.remove(index);
+        }else{throw new IllegalStateException("The rack is empty");}
+    }
     public void updateTile(int index, Tile newTile) {
         tiles.set(index, newTile);
     }
 
     public List<Tile> getTiles() {
         return tiles;
+    }
+    public int remainingTiles() {
+        return tiles.size();
     }
 
     public String toString() {

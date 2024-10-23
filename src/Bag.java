@@ -54,7 +54,6 @@ public class Bag {
         generateTilesRandomly(); //fill hte bag with random tiles after initalizing
     }
 
-
     /**
      * The method generateTilesRandomly will fill the bag with 98 random tiles based on the TILE_DISTRIBUTION
      * Randomly selects tiles and removed them from the selection tileList to ensure not tile is picked more than once
@@ -66,7 +65,6 @@ public class Bag {
         for (char tile : SCRABBLE_TILE_DISTRIBUTION ) {
             tileList.add(new Tile(tile));
         }
-
         // then create random object named rand
         Random rand = new Random();
 
@@ -82,9 +80,9 @@ public class Bag {
 
             // to avoid picking up tiles again we will remove the selected tiles from the list
             tileList.remove(randIndex);
-
         }
     }
+
     /**
      * This method will check to see if bag is empty
      * @return true if bag is empty and false otherwise
@@ -117,18 +115,7 @@ public class Bag {
     /**
      * This method will clear the bag and will allow to restart, should be called when resetting the game
      */
-
     public void clearBag() {
         bag.clear(); // clear all tiles from the bag
     }
-
-
-    /**
-     * The method getTiles will provide access to bag tiles this is for other classes to use if needed
-     * @return a new deque containing a copy of the tiles in the bag
-     */
-    public Deque<Tile> getTiles() {
-        return new ArrayDeque<> (bag) ; // copy contents of original bag's content to keep the integrity of original bag
-    }
-
 }

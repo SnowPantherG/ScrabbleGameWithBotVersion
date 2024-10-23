@@ -16,11 +16,15 @@ import java.util.*;
  * @version v1.2, 22nd October 2024
  * @author Anique Ali
  * added docstrings
+ *
+ * @version v1.3, 22nd October 2024
+ * @author Muhammad Maisam
+ * Implemented a rack instance for each player.
  */
 
 public class Player {
     private String name;
-    private List<Tile> tiles; // playing card
+    private Rack rack;//private List<Tile> tiles; // playing card
     private int remainingTurns; // turns left
     private int currentScore; // current score
     private int wins; // round of wins
@@ -36,11 +40,11 @@ public class Player {
      */
     public Player(String name) {
         this.name = name;
-        this.tiles = new ArrayList<Tile>(); // Initializes the tile list as empty
+        this.rack = new Rack();//this.tiles = new ArrayList<Tile>(); // Initializes the tile list as empty
         this.remainingTurns = 3; //default turns to 3
         this.currentScore = 0;
         this.wins = 0;
-        this.isCurrentPlayer = false; // not play in current round
+        this.isCurrentPlayer = false; // not play in current round  //checkk
         this.rerollCount=10;
     }
 
@@ -59,7 +63,7 @@ public class Player {
      * @return A list of Tile objects representing the player's tiles.
      */
     public List<Tile> getTiles() {
-        return tiles;
+        return rack.getTiles();
     }
 
     /**
@@ -68,7 +72,7 @@ public class Player {
      * @param tile The tile to be added.
      */
     public void addTile(Tile tile) {
-        tiles.add(tile);
+        rack.addTile(tile);
     }
 
     /**
@@ -77,7 +81,7 @@ public class Player {
      * @param tile The tile to be removed.
      */
     public void removeTile(Tile tile) {
-        tiles.remove(tile);
+        rack.removeTile(tile);
     }
 
     /**

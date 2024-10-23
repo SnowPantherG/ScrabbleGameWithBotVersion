@@ -21,6 +21,7 @@ public class Word {
         this.player = player;
         this.isValid = true; // Default to valid
 
+        score = 0;
         // Calculate the score
         for (Tile tile : tiles) {
             score += tile.getValue();
@@ -36,7 +37,7 @@ public class Word {
     }
 
     public String getDescription() {
-        return String.format("%s (%d, %d) - (%d, %d) - Score: %d", getWordString(), startX, startY, endX, endY, score);
+        return String.format("%s From:(%d, %d) - To:(%d, %d) - Score: %d", getWordString(), startX, startY, endX, endY, score);
     }
 
     public int getScore() {

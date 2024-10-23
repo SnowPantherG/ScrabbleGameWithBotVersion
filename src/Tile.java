@@ -1,6 +1,5 @@
 import java.util.HashMap;
 
-
 /**
  * The tile class is a representation of a single tile that is used in scrabble game.
  * Every tile is assigned a unique letter and a corresponding point value.
@@ -12,6 +11,9 @@ import java.util.HashMap;
  * @author Anique Ali
  * @version V1.1 22nd October 2024
  * added docstrings
+ *
+ * @author Muhammad Maisam
+ * @version V1.2 22nd October 2024
  */
 public class Tile {
     private char letter;  // The letter on the tile ('A', 'B', ....., 'Z')
@@ -38,7 +40,7 @@ public class Tile {
         tvalues.put('N', 2);
         tvalues.put('O', 2);
         tvalues.put('P', 4);
-        tvalues.put('Q', 12);
+        tvalues.put('Q', 10);
         tvalues.put('R', 2);
         tvalues.put('S', 1);
         tvalues.put('T', 1);
@@ -111,5 +113,14 @@ public class Tile {
 
     public String toString() {
         return String.valueOf(letter);
+    }
+
+    /**
+     * String representation of the tile (letter and value)
+     * @return The letter and value on the tile as a string
+     */
+
+    public String tileDescription() {
+        return "{" + letter + ", " + value + "}";
     }
 }
