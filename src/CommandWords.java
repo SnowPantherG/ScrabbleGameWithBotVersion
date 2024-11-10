@@ -13,7 +13,9 @@ public class CommandWords
 {
     // a constant array that holds all valid command words
     private static final String[] validCommands = {
-            "pass", "quit", "help", "challenge", "status", "rules", "play", "player", "status", "board", "exchange", "word", "place", "locationX", "locationY"
+            "pass", "quit", "help", "challenge", "status",
+            "rules", "play", "player", "status", "board",
+            "exchange", "word", "place", "locationX", "locationY"
     };
 
     /**
@@ -37,5 +39,17 @@ public class CommandWords
         }
         // if we get here, the string was not found in the commands
         return false;
+    }
+
+    public static String getCommandWords() {
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < validCommands.length; i++) {
+            sb.append(validCommands[i]);
+            if (i < validCommands.length - 1) {
+                sb.append(", ");
+            }
+        }
+        sb.append("]");
+        return sb.toString();
     }
 }

@@ -1,4 +1,13 @@
 import java.util.List;
+/**
+ * The word class represents a word.
+ * It is made of multiple tiles and stores the direction and location of
+ * the word on the board. Also stores if a word is valid or unvalid.
+ * It also stores which player came up with the word.021
+02 *
+ * @author Muhammad Maisam
+ * @version 2024.10.22
+ */
 
 public class Word {
     private List<Tile> tiles;
@@ -11,13 +20,21 @@ public class Word {
     private String player;
     private boolean isValid;
 
-    public Word(List<Tile> tiles, String direction, int startX, int startY, int endX, int endY, String player) {
+    public Word(List<Tile> tiles, String direction, int startX, int startY, String player) {
         this.tiles = tiles;
         this.direction = direction;
         this.startX = startX;
         this.startY = startY;
-        this.endX = endX;
-        this.endY = endY;
+        int offset = tiles.size() - 1;
+        if(direction == "vertical"){
+            endX = startX;
+            endY = startY + offset;
+        } else if(direction == "horizontal"){
+            endX = startX + offset;
+            endY = startY;
+        }
+        //this.endX = endX;
+        //this.endY = endY;
         this.player = player;
         this.isValid = true; // Default to valid
 

@@ -11,6 +11,9 @@ import java.util.*;
  * updated the Bag deque, change of type from character to tile object
  * @author Shenhao Gong
  *
+ * @author Muhammad Maisam
+ * @version 2024.10.22
+ *
  */
 
 public class Bag {
@@ -96,11 +99,23 @@ public class Bag {
      * @return the first tile from the bag
      * @throws IllegalStateException if the bag is empty
      */
-    public Tile removeTile (){
-        if (bag.isEmpty()){
+    public Tile removeTile(){
+        if (this.isEmpty()){
             throw new IllegalStateException("The bag is empty"); // stateException is to handle empty bag.
         }
         return bag.removeFirst(); // we will remove the tile from the beginning
+    }
+
+    /**
+     * The method addTile is responsible for adding a tile to the bag used for reshuffling rack.
+     * @throws IllegalStateException if the bag is full
+     */
+    public void addTile(Tile tile){
+        if (this.getRemainingTiles() >= 98){
+            throw new IllegalStateException("The bag is full"); // stateException is to handle full bag.
+        }
+        //return
+        bag.addLast(tile); // we will add the tile
     }
 
     /**

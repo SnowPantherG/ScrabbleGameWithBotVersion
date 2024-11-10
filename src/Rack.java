@@ -1,6 +1,15 @@
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Rack class will act as a Rack for each player in the scrabble game, the maximum tiles will be
+ * 7 for each rack which will represent alphabets on tiles.
+ *
+ * @author Muhammad Maisam
+ * @version 2024.10.22
+ *
+ */
+
 public class Rack {
     private List<Tile> tiles;
 
@@ -12,18 +21,16 @@ public class Rack {
             tiles.add(newTile);
         }else{throw new IllegalStateException("The rack is full");}
     }
-    public void removeTile(Tile newTile) {
+    public Tile removeTile(Tile newTile) {
         if (tiles.size() > 0) {
             tiles.remove(newTile);
+            return newTile;
         }else{throw new IllegalStateException("The rack is empty");}
     }
-    public void removeTile(int index) {
+    public Tile removeTile(int index) {
         if (tiles.size() > 0) {
-            tiles.remove(index);
+            return tiles.remove(index);
         }else{throw new IllegalStateException("The rack is empty");}
-    }
-    public void updateTile(int index, Tile newTile) {
-        tiles.set(index, newTile);
     }
 
     public List<Tile> getTiles() {
@@ -38,6 +45,13 @@ public class Rack {
         for (Tile tile : tiles) {
             sb.append(tile.getLetter());
             sb.append(" ");
+        }
+        return sb.toString();
+    }
+    public String toString_() {
+        StringBuilder sb = new StringBuilder();
+        for (Tile tile : tiles) {
+            sb.append(tile.getLetter());
         }
         return sb.toString();
     }
