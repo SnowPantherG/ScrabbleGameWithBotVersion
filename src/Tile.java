@@ -1,6 +1,4 @@
-//test anique
 import java.util.HashMap;
-
 
 /**
  * The tile class is a representation of a single tile that is used in scrabble game.
@@ -8,7 +6,14 @@ import java.util.HashMap;
  * The class includes functions for getting the letter and value of a tile, as well as for comparing two tiles by their letters.
  *
  * @author Rafid Mehedi Hasan
- * @version V1.0 21st October, 2024
+ * @version V1.0 21st October 2024
+ *
+ * @author Anique Ali
+ * @version V1.1 22nd October 2024
+ * added docstrings
+ *
+ * @author Muhammad Maisam
+ * @version V1.2 22nd October 2024
  */
 public class Tile {
     private char letter;  // The letter on the tile ('A', 'B', ....., 'Z')
@@ -19,32 +24,32 @@ public class Tile {
 
     // Static block to initialize the values (modified values)
     static {
-      tvalues.put('A', 2); 
-      tvalues.put('B', 5);
-      tvalues.put('C', 4); 
-      tvalues.put('D', 3);
-      tvalues.put('E', 1); 
-      tvalues.put('F', 6); 
-      tvalues.put('G', 3); 
-      tvalues.put('H', 7);
-      tvalues.put('I', 2); 
-      tvalues.put('J', 9); 
-      tvalues.put('K', 8); 
-      tvalues.put('L', 2);
-      tvalues.put('M', 5); 
-      tvalues.put('N', 2); 
-      tvalues.put('O', 2); 
-      tvalues.put('P', 4);
-      tvalues.put('Q', 12); 
-      tvalues.put('R', 2); 
-      tvalues.put('S', 1); 
-      tvalues.put('T', 1);
-      tvalues.put('U', 3); 
-      tvalues.put('V', 7); 
-      tvalues.put('W', 8); 
-      tvalues.put('X', 9);
-      tvalues.put('Y', 6); 
-      tvalues.put('Z', 10);
+        tvalues.put('A', 2);
+        tvalues.put('B', 5);
+        tvalues.put('C', 4);
+        tvalues.put('D', 3);
+        tvalues.put('E', 1);
+        tvalues.put('F', 6);
+        tvalues.put('G', 3);
+        tvalues.put('H', 7);
+        tvalues.put('I', 2);
+        tvalues.put('J', 9);
+        tvalues.put('K', 8);
+        tvalues.put('L', 2);
+        tvalues.put('M', 5);
+        tvalues.put('N', 2);
+        tvalues.put('O', 2);
+        tvalues.put('P', 4);
+        tvalues.put('Q', 10);
+        tvalues.put('R', 2);
+        tvalues.put('S', 1);
+        tvalues.put('T', 1);
+        tvalues.put('U', 3);
+        tvalues.put('V', 7);
+        tvalues.put('W', 8);
+        tvalues.put('X', 9);
+        tvalues.put('Y', 6);
+        tvalues.put('Z', 10);
     }
 
     /**
@@ -108,5 +113,14 @@ public class Tile {
 
     public String toString() {
         return String.valueOf(letter);
+    }
+
+    /**
+     * String representation of the tile (letter and value)
+     * @return The letter and value on the tile as a string
+     */
+
+    public String tileDescription() {
+        return "{" + letter + ", " + value + "}";
     }
 }
