@@ -1,6 +1,6 @@
 import javax.sound.midi.*;
 
-/*music may use for the game and could learn how to do multi threading*/
+//music may use for the game and could learn how to do multi threading
 
 public class Midi8BitBrainwash {
     public static void main(String[] args) {
