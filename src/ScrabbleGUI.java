@@ -1,3 +1,18 @@
+/**
+ * Ani 1111
+ * The scrabblegame GUI class manages all visual components and user interactions for the game. It initalizes the
+ * game setup with player selection, have interactive game board with premimum sqaures, has drag and drop funcationailty with player
+ * tile rack, traks the score and updates the display, includes menu items such as restart and end game for better and quick access of the user.
+ *
+ *
+ * @author Shenhao Gong
+ * @version 2024.11.09
+ *
+ * @author Anique Ali
+ * @version 2024.11.10
+ */
+
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.*;
@@ -12,6 +27,7 @@ public class ScrabbleGUI extends JFrame {
     private JButton[][] boardButtons;
     private JPanel rackPanel;
     private JLabel[] rackLabels;
+    private JComboBox<String> playerComboBox;
 
     // Declare buttons for the start panel
     private JButton playButton;
@@ -22,23 +38,41 @@ public class ScrabbleGUI extends JFrame {
     private JButton checkButton;
     private JButton passButton;
     private JButton rerollButton;
-    private JButton endGameButton;
-
+    
+    /**
+     * Create a new Scrabble game with specific controller, initializes the UI and
+     * @param controller the controller hat will be managing logic at back
+     */
     public ScrabbleGUI(GameController controller) {
         this.controller = controller;
         initUI();
+        createMenuBar();
     }
 
+    /**
+     * Initilaizes the user interface components.
+     */
     private void initUI() {
+        setupFrame();
+        setupStartPanel();
+        setupActionListeners();
+    }
+
+    /**
+     * Sets up the basic frame properties like size, title and resizability.
+     */
+    private void setupFrame(){
         setTitle("Scrabble Game");
         setSize(600, 300);
         setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+    }
 
-        // Create the menu bar
-        createMenuBar();
-
+    /**
+     * Sets up inital start panel with welcome message and invokes center panel.
+     */
+    private void setupStartPanel(){
         // Start Panel
         startPanel = new JPanel();
         startPanel.setLayout(new BorderLayout());
@@ -48,6 +82,18 @@ public class ScrabbleGUI extends JFrame {
         startPanel.add(welcomeLabel, BorderLayout.NORTH);
 
         // Center Panel for number of players and buttons
+        JPanel centerPanel = createCenterPanel();
+        startPanel.add(centerPanel, BorderLayout.CENTER);
+
+        getContentPane().add(startPanel);
+    }
+
+    /**
+     * Create center panel including game buttons and player selection panel
+     * @return centerpanel The centerpanel that was created
+     */
+    private JPanel createCenterPanel() {
+
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
 
@@ -90,24 +136,31 @@ public class ScrabbleGUI extends JFrame {
 
         centerPanel.add(buttonsPanel);
 
-        startPanel.add(centerPanel, BorderLayout.CENTER);
+        return centerPanel;
+    }
 
-        getContentPane().add(startPanel);
+    /**
+     * Sets up action listener for the buttons.
+     */
 
-        // Add action listener for Play button
+    private void setupActionListeners() {
+        // Store the combo box reference for cleaner access
+        JComboBox<?> playerComboBox = (JComboBox<?>)
+                ((JPanel)((JPanel)startPanel.getComponent(1)).getComponent(0)).getComponent(1);
+
         playButton.addActionListener(e -> {
             int numPlayers = Integer.parseInt((String) playerComboBox.getSelectedItem());
-            showGamePanel(); // Initialize GUI components first
-            controller.startGame(numPlayers); // Then start the game
+            showGamePanel();
+            controller.startGame(numPlayers);
         });
 
-        // Add action listener for Help button on the start panel
         helpButtonStart.addActionListener(e -> showHelpDialog());
-
-        // Add action listener for Quit button on the start panel
         quitButtonStart.addActionListener(e -> System.exit(0));
     }
 
+    /**
+     * Creates menu bar including end game, restart, and help as menu items.
+     */
     private void createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
 
@@ -140,6 +193,48 @@ public class ScrabbleGUI extends JFrame {
         setJMenuBar(menuBar);
     }
 
+    /**
+     * Sets the visual appearance of the board squares, configures background color and text for different squares.
+     * @param button The button representing square
+     * @param squareType The types of square
+     * @param row The row square
+     * @param col The column of square
+     */
+
+    private void setSquareAppearance(JButton button, SquareType squareType, int row, int col) {
+        switch (squareType) {
+            case TRIPLE_WORD:
+                button.setBackground(Color.RED.darker());
+                button.setText("TW");
+                break;
+            case DOUBLE_WORD:
+                button.setBackground(Color.PINK);
+                if (row == 7 && col == 7) {
+                    button.setFont(new Font("Arial Unicode MS", Font.BOLD, 28));
+                    button.setText("★"); // Center square
+                } else {
+                    button.setText("DW");
+                }
+                break;
+            case TRIPLE_LETTER:
+                button.setBackground(Color.BLUE.darker());
+                button.setText("TL");
+                break;
+            case DOUBLE_LETTER:
+                button.setBackground(Color.CYAN);
+                button.setText("DL");
+                break;
+            default:
+                button.setBackground(Color.WHITE);
+                button.setText("");
+                break;
+        }
+    }
+
+    /**
+     * Creates and displays the main game panel with board and rack, sets up message area, player rack
+     * and game buttons.
+     */
     private void showGamePanel() {
         // Remove start panel
         getContentPane().remove(startPanel);
@@ -167,31 +262,7 @@ public class ScrabbleGUI extends JFrame {
 
                 // Set background color and label based on square type
                 SquareType squareType = gameBoard.getSquareType(row, col);
-                switch (squareType) {
-                    case TRIPLE_WORD:
-                        cell.setBackground(Color.RED.darker());
-                        cell.setText("TW");
-                        break;
-                    case DOUBLE_WORD:
-                        cell.setBackground(Color.PINK);
-                        if (row == 7 && col == 7) {
-                            cell.setText("★"); // Center square
-                        } else {
-                            cell.setText("DW");
-                        }
-                        break;
-                    case TRIPLE_LETTER:
-                        cell.setBackground(Color.BLUE.darker());
-                        cell.setText("TL");
-                        break;
-                    case DOUBLE_LETTER:
-                        cell.setBackground(Color.CYAN);
-                        cell.setText("DL");
-                        break;
-                    default:
-                        cell.setBackground(Color.WHITE);
-                        break;
-                }
+                setSquareAppearance(cell, squareType, row, col);
 
                 // Add MouseListener for right-click
                 int finalRow = row;
@@ -285,12 +356,18 @@ public class ScrabbleGUI extends JFrame {
     }
 
 
-
-    // Method to handle checking the word
+    /**
+     * Handles checking if word is correct through game controller method checkWord()
+     */
     private void handleCheckWord() {
         controller.checkWord();
     }
 
+    /**
+     * Updates the board display with current state, such as tile postion and square
+     * appearances.
+     * @param board The board state of display
+     */
     public void updateBoard(Board board) {
         for (int row = 0; row < 15; row++) {
             for (int col = 0; col < 15; col++) {
@@ -311,43 +388,31 @@ public class ScrabbleGUI extends JFrame {
                     }
                 } else {
                     // Reset the button to its original state
-                    button.putClientProperty("hasTile", false); // No tile on the button
+                    button.putClientProperty("hasTile", false);
                     SquareType squareType = board.getSquareType(row, col);
-                    switch (squareType) {
-                        case TRIPLE_WORD:
-                            button.setBackground(Color.RED.darker());
-                            button.setText("TW");
-                            break;
-                        case DOUBLE_WORD:
-                            button.setBackground(Color.PINK);
-                            if (row == 7 && col == 7) {
-                                button.setFont(new Font("Arial Unicode MS", Font.BOLD, 28));
-                                button.setText("★"); // Center square
-                            } else {
-                                button.setText("DW");
-                            }
-                            break;
-                        case TRIPLE_LETTER:
-                            button.setBackground(Color.ORANGE);
-                            button.setText("TL");
-                            break;
-                        case DOUBLE_LETTER:
-                            button.setBackground(Color.CYAN);
-                            button.setText("DL");
-                            break;
-                        default:
-                            button.setBackground(Color.WHITE);
-                            button.setText("");
-                            break;
+
+                    // Set the basic appearance
+                    setSquareAppearance(button, squareType, row, col);
+
+                    // Ensure center square appears correctly
+                    if (row == 7 && col == 7 && squareType == SquareType.DOUBLE_WORD) {
+                        button.setFont(new Font("Arial Unicode MS", Font.BOLD, 28));
+                        button.setText("★");
                     }
+
                     button.setEnabled(true);
+                    button.setOpaque(true);
+                    button.setBorderPainted(true);
                 }
             }
         }
     }
 
-
-
+    /**
+     * Updates player racks with current tiles, manages tile display and drag and
+     * drop functionality.
+     * @param tiles List of tiles to display in the rack
+     */
     public void updateRack(List<Tile> tiles) {
         for (int i = 0; i < rackLabels.length; i++) {
             JLabel tileLabel = rackLabels[i];
@@ -375,6 +440,10 @@ public class ScrabbleGUI extends JFrame {
         messageArea.setCaretPosition(messageArea.getDocument().getLength());
     }
 
+    /**
+     * Updates scoreboard display with the current players scores
+     * @param players List of player with their score
+     */
     public void updateScoreboard(List<Player> players) {
         // Update the scoreboard or message area with players' scores
         StringBuilder sb = new StringBuilder();
@@ -385,6 +454,9 @@ public class ScrabbleGUI extends JFrame {
         messageArea.setText(sb.toString());
     }
 
+    /**
+     * Pop up dialog that shows game instructions and rules
+     */
     private void showHelpDialog() {
         String helpMessage = "Welcome to Scrabble!\n\n"
                 + "Instructions:\n"
@@ -399,7 +471,9 @@ public class ScrabbleGUI extends JFrame {
         JOptionPane.showMessageDialog(this, helpMessage, "Help", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    // Inner class for exporting data from tile labels
+    /**
+     * Handles drag operation from players tile rack.
+     */
     class ValueExportTransferHandler extends TransferHandler {
         public ValueExportTransferHandler(String property) {
             super(property);
@@ -425,7 +499,9 @@ public class ScrabbleGUI extends JFrame {
         }
     }
 
-    // Inner class for importing data into board buttons
+    /**
+     * Handles drop operation onto board squares, this is when we drop to board.
+     */
     class ValueImportTransferHandler extends TransferHandler {
         private int row;
         private int col;
@@ -475,6 +551,12 @@ public class ScrabbleGUI extends JFrame {
         }
     }
 
+    /**
+     * Handles right click events on board game, this allows removal of tile from board
+     * if the player decides to change tile in their turn .
+     * @param row The row position of the square clicked
+     * @param col The column position of the square clicked
+     */
     private void handleBoardRightClick(int row, int col) {
         if (controller.isTileFixed(row, col)) {
             showMessage("Cannot remove a fixed tile.");
@@ -488,32 +570,8 @@ public class ScrabbleGUI extends JFrame {
             // Reset the button to its original state
             button.putClientProperty("hasTile", false); // No tile on the button
             SquareType squareType = controller.getGame().getBoard().getSquareType(row, col);
-            switch (squareType) {
-                case TRIPLE_WORD:
-                    button.setBackground(Color.RED.darker());
-                    button.setText("TW");
-                    break;
-                case DOUBLE_WORD:
-                    button.setBackground(Color.PINK);
-                    if (row == 7 && col == 7) {
-                        button.setText("★"); // Center square
-                    } else {
-                        button.setText("DW");
-                    }
-                    break;
-                case TRIPLE_LETTER:
-                    button.setBackground(Color.BLUE.darker());
-                    button.setText("TL");
-                    break;
-                case DOUBLE_LETTER:
-                    button.setBackground(Color.CYAN);
-                    button.setText("DL");
-                    break;
-                default:
-                    button.setBackground(Color.WHITE);
-                    button.setText("");
-                    break;
-            }
+            setSquareAppearance(button, squareType, row, col);
+
             Font originalFont = (Font) button.getClientProperty("originalFont");
             if (originalFont != null) {
                 button.setFont(originalFont);
@@ -526,25 +584,19 @@ public class ScrabbleGUI extends JFrame {
         }
     }
 
+    /**
+     * Shows current players name in message area
+     * @param playerName Name of current player
+     */
 
     public void showCurrentPlayer(String playerName) {
         messageArea.append("\nCurrent player: " + playerName + "\n");
     }
 
-    public void updateFixedTiles(Board board) {
-        for (int row = 0; row < 15; row++) {
-            for (int col = 0; col < 15; col++) {
-                if (board.isTileFixed(row, col)) {
-                    JButton button = boardButtons[row][col];
-                    button.setEnabled(false);
-                    button.setBackground(Color.decode("#90EE90")); // Light green color
-                    button.setOpaque(true);
-                    button.setBorderPainted(false);
-                }
-            }
-        }
-    }
-
+    /**
+     * Shows a pop up dialog with final scores
+     * @param players List of players with their final scores
+     */
     public void displayFinalScores(List<Player> players) {
         StringBuilder sb = new StringBuilder();
         sb.append("Final Scores:\n");
@@ -554,6 +606,10 @@ public class ScrabbleGUI extends JFrame {
         JOptionPane.showMessageDialog(this, sb.toString(), "Game Over", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    /**
+     * Disables all the game interactions when the game ends, disabling buttons and drag
+     * and drop of tiles.
+     */
     public void disableGameActions() {
         // Disable buttons and inputs
         checkButton.setEnabled(false);
