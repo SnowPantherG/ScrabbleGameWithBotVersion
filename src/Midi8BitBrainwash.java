@@ -1,7 +1,7 @@
 import javax.sound.midi.*;
-/**
- * some music maybe could add to the game and learn how to use multi-threading
- * */
+
+/*music may use for the game and could learn how to do multi threading*/
+
 public class Midi8BitBrainwash {
     public static void main(String[] args) {
         try {
@@ -23,7 +23,7 @@ public class Midi8BitBrainwash {
 
 
             int[] melodyNotes = {
-                    00,00,60, 60, 62, 62, 60, 64, 00,00, // C,C,D,D,C,E.
+                    0,00,60, 60, 62, 62, 60, 64, 0, 0, // C,C,D,D,C,E.
                     60, 60, 62, 62, 60, 67, 00,00, //
                     67, 67, 69, 69, 67, 72, 00,00,
                     72, 72, 71, 69, 71, 67, 00,00,
