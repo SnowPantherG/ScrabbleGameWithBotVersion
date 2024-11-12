@@ -22,5 +22,3 @@ Needs to be refactored and improved for next iteration.
 Different stategies to implement the class will be discussed in the next team meeting.
 
 
-Parser.java, Command.java, CommandWords.java:
-Kept the same implementation except changing some minute parameters.
