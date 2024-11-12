@@ -120,7 +120,9 @@ public class ScrabbleGame {
     }
 
     public void pass() {
+
         nextTurn();
+        getCurrentPlayer().decrementTurns();
     }
 
     // Helper methods
@@ -396,7 +398,7 @@ public class ScrabbleGame {
         lastPlacedTiles.clear();
         // Refill the player's rack
         refillPlayerRack(getCurrentPlayer());
-        this.pass();
+        this.nextTurn();
     }
 
     public boolean isFirstWord() {

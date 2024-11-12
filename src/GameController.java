@@ -82,9 +82,14 @@ public class GameController implements GameListener{
 
 
     public void passTurn() {
-        game.pass();
-        gui.showMessage("Player passed. Next player's turn.");
-        gui.updateRack(game.getCurrentPlayer().getTiles());
+        if(game.getCurrentPlayer().getSkipTurns()>0) {
+            game.pass();
+            gui.showMessage("Player passed. Next player's turn.");
+            gui.updateRack(game.getCurrentPlayer().getTiles());
+
+        } else{
+            gui.showMessage("Player has passed more than allowed turns.");
+        }
     }
 
     public void rerollTiles() {
