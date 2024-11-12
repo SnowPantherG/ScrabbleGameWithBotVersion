@@ -25,9 +25,9 @@ public class Board {
 
     public Board() {
         board = new Tile[BOARD_SIZE][BOARD_SIZE];
-        squareTypes = new SquareType[15][15];
+        squareTypes = new SquareType[BOARD_SIZE][BOARD_SIZE];
         placedWords = new ArrayList<>();
-        fixedTiles = new boolean[15][15];
+        fixedTiles = new boolean[BOARD_SIZE][BOARD_SIZE];
         initializeSquareTypes();
     }
     public char getSquare(int row, int col) {
@@ -170,16 +170,16 @@ public class Board {
 
     private void initializeSquareTypes() {
         // Initialize all squares to NORMAL by default
-        for (int row = 0; row < 15; row++) {
-            for (int col = 0; col < 15; col++) {
+        for (int row = 0; row < BOARD_SIZE; row++) {
+            for (int col = 0; col < BOARD_SIZE; col++) {
                 squareTypes[row][col] = SquareType.NORMAL;
             }
         }
 
         // Set the premium squares
-        setPremiumSquares();
+        //setPremiumSquares();
     }
-
+/**
     private void setPremiumSquares() {
         // Define the positions of premium squares based on Scrabble rules
 
@@ -232,6 +232,7 @@ public class Board {
             squareTypes[pos[0]][pos[1]] = SquareType.DOUBLE_LETTER;
         }
     }
+    **/
 
     public SquareType getSquareType(int row, int col) {
         return squareTypes[row][col];

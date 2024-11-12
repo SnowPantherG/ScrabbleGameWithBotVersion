@@ -34,7 +34,9 @@ public class GameController implements GameListener{
     public void checkWord() {
         List<WordInfo> newWords = game.getNewWordsFormed();
         boolean allValid = true;
-
+        //if(newWords.size()<2){
+         //   allValid = false;
+        //}
         // Validate each new word formed
         for (WordInfo wordInfo : newWords) {
             if (!game.isValidWord(wordInfo.word)) {
