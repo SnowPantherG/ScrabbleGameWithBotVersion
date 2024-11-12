@@ -1,3 +1,10 @@
+/**
+ * This class will act as a test for each player in the scrabble game, the maximum tiles will be
+ * 7 for each player which will represent alphabets on tiles.
+ *
+ * @author Mehedi Hasan Rafid
+ * @version 2024.11.11
+ */
 import org.junit.Before;
 import org.junit.Test;
 
