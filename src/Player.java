@@ -26,6 +26,8 @@ public class Player {
     private Rack rack;
     private int currentScore; // current score
     private int status; //0: quit or disqualified from playing or 1: is playing
+
+    private int rerollCount;// reroll time
 //
 
     //private int wins; // round of wins
@@ -48,6 +50,7 @@ public class Player {
         //this.isCurrentPlayer = false; // not play in current round  //checkk
         //this.rerollCount=10;
         this.skipTurns = 3; //default turns to 3
+        this.rerollCount = 3; // Players have 3 rerolls
     }
 
     /**
@@ -80,6 +83,25 @@ public class Player {
     public List<Tile> getTiles() {
         return rack.getTiles();
     }
+
+    /**
+     * Return the reroll count of one player
+     *
+     * @return A int of reroll
+     * */
+    public int getRerollCount() {
+        return rerollCount;
+    }
+
+    /**
+     * after the player reroll, decrease the rerool count
+     * */
+    public void decrementRerollCount() {
+        if (rerollCount > 0) {
+            rerollCount--;
+        }
+    }
+
 
     /**
      * Returns the player's current list of tiles as a String.
@@ -121,9 +143,17 @@ public class Player {
     }
 
     /**
+     * Clear current player's Tile
+     *
+     * */
+    public void clearTiles() {
+        rack.clearTiles();
+    }
+
+    /**
      * Removes a specified tile from the player's list of tiles.
      *
-     * @param integer The tile index to be removed.
+     * @param int of The tile index to be removed.
      */
     public Tile removeTile(int index) {
         return rack.removeTile(index);
@@ -171,7 +201,7 @@ public class Player {
     public void decrementScore(int points) {
         if ((currentScore - points)>=0){
             currentScore -= points;
-        } else{throw new IllegalStateException("Score can not be negative");}
+        } //else{throw new IllegalStateException("Score can not be negative");}
     }
 
     /**
@@ -200,5 +230,4 @@ public class Player {
 
 
 } ///END OF CLASS
-
 

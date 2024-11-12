@@ -1,269 +1,160 @@
+import javax.swing.*;
+import java.util.List;
+
 /**
  * @author  Michael Kölling and David J. Barnes
  * @version 2016.02.29
  *
  * @author Muhammad Maisam
  * @version 2024.10.22
+ *
+ * @author Shenhao Gong
+ * @version 2024.11.09
+ * updated version for implement GUI
  */
+public class GameController implements GameListener{
+    private ScrabbleGame game;
+    private ScrabbleGUI gui;
 
-public class GameController {
-    private Parser parser;
-    private ScrabbleGame game; ///change to game/////
-    private GameView view;
-    private int mode; //0 setup 1 play 2 word placement
-    ///Following 5 attributes correspond to word placement
-    private String word_ = "";
-    private String direction_ = "";
-    private int x_ = 0;
-    private int y_ = 0;
-    private boolean wordFlag = false;
-    /**
-     * Create the game.
-     */
-    public GameController()
-    {
-        parser = new Parser();
-        game = new ScrabbleGame();
-        view = new GameView();
-        play();
+    public GameController() {
+        this.game = new ScrabbleGame();
+        this.gui = new ScrabbleGUI(this);
+        game.setGameListener(this);
+        gui.setVisible(true);
     }
 
-    /**
-     *  Main play routine. Loops until end of play.
-     */
-    public void play()
-    {
-        view.printWelcome();
-        mode = 0;
-        // Enter the main command loop.  Here we repeatedly read commands and
-        // execute them until the game is over.
-
-        boolean finished = false;
-        while (! finished) {
-            Command command = parser.getCommand();
-            finished = processCommand(command);
-        }
-        view.printEnd();
-
+    public void startGame(int numPlayers) {
+        game.play(numPlayers);
+        gui.updateBoard(game.getBoard());
+        gui.updateRack(game.getCurrentPlayer().getTiles());
+        gui.updateScoreboard(game.getPlayers());
+        gui.showMessage("Game started with " + numPlayers + " players.");
     }
 
-    /**
-     *
-     */
-    private void printCommandWords() {
-        view.printCommandWords(parser.getCommandWords());
-    }
-    private void printPlayer(){view.printPlayer(game.getPlayer());}
-    private void printPlayers(){view.printPlayers(game.getPlayers());}
-    private void printBoard(){view.printBoard(game.getBoard());}
-    private void printStatus(){view.printStatus(game.getStatus());}
-    /**
-     * Given a command, process (that is: execute) the command.
-     * @param command The command to be processed.
-     * @return true If the command ends the game, false otherwise.
-     */
-    private boolean processCommand(Command command) {
-        boolean wantToQuit = false;
+    public void checkWord() {
+        List<WordInfo> newWords = game.getNewWordsFormed();
+        boolean allValid = true;
 
-        if (command.isUnknown()) {
-            view.printError(0);
-            return false;
-        }
-        String commandWord = command.getCommandWord();
-        if (commandWord.equals("help")) {//complete
-            view.printHelp();
-            printCommandWords();
-        }
-        else if (commandWord.equals("quit")) {
-            wantToQuit = handleQuit(command);
-        }
-        else if (commandWord.equals("rules")) {//complete
-            printCommandWords();
-            view.printRules();
-        }
-        else if (commandWord.equals("player") && mode > 0) {
-            printPlayer();
-        }
-        else if (commandWord.equals("players") && mode > 0) {
-            printPlayers();
-        }
-        else if (commandWord.equals("board") && mode > 0) {
-            printBoard();
-        }
-        else if (commandWord.equals("status") && mode > 0) {
-            printStatus();
-        }
-        else if (commandWord.equals("play") && mode == 0 ) {
-            mode = 1;
-            handlePlay(command);
-        }
-        else if(mode == 0){view.printError(1);}
-        else if (commandWord.equals("challenge") && mode == 1) {
-            handleChallenge(command);
-        }
-        else if (commandWord.equals("pass") && mode == 1) {
-            handlePass(command);
-        }
-        else if (commandWord.equals("exchange") && mode == 1) {
-            handleExchange(command);
-        }
-        else if (commandWord.equals("word") && mode == 1) {
-            handleWord(command);
-        }
-        else if(mode == 1){view.printError(2);}
-        else if (commandWord.equals("locationX") && mode == 2) {
-            handleWord(command);
-        }
-        else if(mode == 2){view.printError(3);}
-        else if (commandWord.equals("locationY") && mode == 3) {
-
-            handleWord(command);
-        }
-        else if(mode == 3){view.printError(4);}
-        else if (commandWord.equals("place") && mode == 4) {
-            handleWord(command);
-        }
-        else if(mode == 4){view.printError(5);}
-        return wantToQuit;
-    }
-
-    private void handlePlay(Command command) {
-        if(command.hasSecondWord()) {
-            int players = convertToInteger(command.getSecondWord());
-            if(players > 0 && players <= 4){
-                game.play(players);
-            }else{
-                view.printError(6);
-                //    throw new IllegalStateException("Number of players out of bound");
+        // Validate each new word formed
+        for (WordInfo wordInfo : newWords) {
+            if (!game.isValidWord(wordInfo.word)) {
+                allValid = false;
+                gui.showMessage("Invalid word: " + wordInfo.word);
+                // Optionally, reset the board or allow the player to adjust
+                break;
             }
         }
-        else {
-            game.play(2);
+
+        if (allValid) {
+            int totalScore = 0;
+            // Calculate score for each word and display messages
+            for (WordInfo wordInfo : newWords) {
+                int wordScore = game.calculateWordScore(wordInfo.positions, game.isFirstWord());
+                totalScore += wordScore;
+                gui.showMessage("Word '" + wordInfo.word + "' is valid. Score: " + wordScore);
+            }
+
+            // Update the player's score
+            game.getCurrentPlayer().incrementScore(totalScore);
+
+            // Update the GUI
+            gui.updateScoreboard(game.getPlayers());
+            game.finalizeTurn();
+            gui.updateBoard(game.getBoard());
+            gui.updateRack(game.getCurrentPlayer().getTiles());
+            gui.showCurrentPlayer(game.getCurrentPlayer().getName());
+
+            // Inform the player
+            gui.showMessage("The word: "+newWords.get(0).word+" is vaild\n"
+                    +"Total score for this turn: " + totalScore);
+        } else {
+            // Handle invalid word scenario
+            gui.showMessage("Your move was invalid. Please adjust your tiles.");
+            // Optionally, remove the placed tiles and return them to the player's rack
+            //game.resetLastMove();
+            gui.updateBoard(game.getBoard());
+            gui.updateRack(game.getCurrentPlayer().getTiles());
         }
-        printStatus();
     }
 
-    private void handleChallenge(Command command) {
-        view.printChallenge(game.challenge());
-        printStatus();
-    }
 
-    private void handlePass(Command command) {
+
+
+
+    public void passTurn() {
         game.pass();
-        printPlayer();
+        gui.showMessage("Player passed. Next player's turn.");
+        gui.updateRack(game.getCurrentPlayer().getTiles());
     }
 
-    private void handleExchange(Command command) {
-        game.exchange();
-        printPlayer();
-    }
-
-    private void handleWord(Command command) {
-
-        if(command.hasSecondWord()) {
-            String commandWord = command.getCommandWord();
-            if (commandWord.equals("word")) {
-                wordFlag = false;
-                word_ = command.getSecondWord();
-                mode++;
-            } else if (commandWord.equals("place")) {
-                if((command.getSecondWord().equals("horizontal")) || (command.getSecondWord().equals("vertical"))) {
-                    direction_ = command.getSecondWord();
-                    wordFlag = true;
-                    mode = 1;
-                }else{
-                    view.printError(9);
-                }
-            } else if (commandWord.equals("locationX")) {
-                x_ = convertToInteger(command.getSecondWord());
-                mode++;
-            }else if (commandWord.equals("locationY")) {
-                y_ = convertToInteger(command.getSecondWord());
-                mode++;
+    public void rerollTiles() {
+        boolean success = game.reroll();
+        if (success) {
+            gui.showMessage("Tiles rerolled.");
+            gui.updateRack(game.getCurrentPlayer().getTiles());
+        } else {
+            if(game.getCurrentPlayer().getRerollCount()==0){
+            gui.showMessage("No rerolls left.");
             }
-            if(wordFlag){
-                game.word(word_, direction_, y_, x_);//swapped x and y
-                printBoard();
-                printPlayer();
+            else{
+                gui.showMessage("bag is empty");
             }
         }
-        else{view.printError(8);}
     }
 
+    public void showHelp() {
+        // Show help dialog or message
+        gui.showMessage("Help: Instructions for the game...");
+    }
 
-    /**
-     * "Quit" was entered. Check the rest of the command to see
-     * whether we really quit the game.
-     * @return true, if this command quits the game, false otherwise.
-     */
-    private boolean handleQuit(Command command)
-    {
-        if(command.hasSecondWord()) {
-            view.printError(7);
-            return false;
-        }
-        else {
-            return true;  // signal that we want to quit
+    public void quitGame() {
+        // Handle quitting the game
+        System.exit(0);
+    }
+
+    public void placeTileOnBoard(char letter, int row, int col) {
+        game.placeTile(letter, row, col);
+    }
+
+    public ScrabbleGame getGame() {
+        return game;
+    }
+
+    public void removeTileFromBoard(char letter, int row, int col) {
+        game.removeTileFromBoard(letter, row, col);
+        // Update the GUI rack to reflect the added tile
+        gui.updateRack(game.getCurrentPlayer().getTiles());
+    }
+
+    public void addTileToRack(char letter, int index) {
+        game.addTileToRack(letter, index);
+        // Update the GUI rack to reflect the added tile
+        gui.updateRack(game.getCurrentPlayer().getTiles());
+    }
+
+    public boolean isTileFixed(int row, int col) {
+        return game.getBoard().isTileFixed(row, col);
+    }
+
+    public void onGameEnd() {
+        gui.showMessage("Game Over!");
+        gui.displayFinalScores(game.getPlayers());
+        gui.disableGameActions();
+    }
+
+    public void endGame() {
+        game.endGame();
+        // The onGameEnd() method will be called via the listener
+    }
+
+    public void restartGame() {
+        int confirm = JOptionPane.showConfirmDialog(gui, "Are you sure you want to restart the game?", "Restart Game", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            game.resetGame();
+            gui.dispose();
+            this.gui = new ScrabbleGUI(this);
+            gui.setVisible(true);
         }
     }
 
-    /**
-     *Generated using AI to convert string representation of number to int
-     * @param numberStr
-     * @return
-     */
-    private static int convertToInteger(String numberStr) {
-        switch (numberStr.toLowerCase()) {
-            case "zero":
-            case "0":
-                return 0;
-            case "one":
-            case "1":
-                return 1;
-            case "two":
-            case "2":
-                return 2;
-            case "three":
-            case "3":
-                return 3;
-            case "four":
-            case "4":
-                return 4;
-            case "five":
-            case "5":
-                return 5;
-            case "six":
-            case "6":
-                return 6;
-            case "seven":
-            case "7":
-                return 7;
-            case "eight":
-            case "8":
-                return 8;
-            case "nine":
-            case "9":
-                return 9;
-            case "ten":
-            case "10":
-                return 10;
-            case "eleven":
-            case "11":
-                return 11;
-            case "twelve":
-            case "12":
-                return 12;
-            case "thirteen":
-            case "13":
-                return 13;
-            case "fourteen":
-            case "14":
-                return 14;
-            case "fifteen":
-            case "15":
-                return 15;
-            default:
-                throw new IllegalArgumentException("Invalid number string: " + numberStr + ".\n Valid Range: 0-15");
-        }
-    }
-}//END OF CLASS GAME CONTROLLER
+}

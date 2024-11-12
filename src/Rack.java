@@ -8,6 +8,10 @@ import java.util.List;
  * @author Muhammad Maisam
  * @version 2024.10.22
  *
+ * @author Shenhao Gong
+ * @version 2024.11.09
+ * added clearTile() method
+ *
  */
 
 public class Rack {
@@ -54,5 +58,9 @@ public class Rack {
             sb.append(tile.getLetter());
         }
         return sb.toString();
+    }
+
+    public void clearTiles(){
+        tiles.clear();
     }
 }

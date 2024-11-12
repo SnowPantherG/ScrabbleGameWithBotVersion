@@ -47,7 +47,7 @@ public class Bag {
             'Z',  // 1 Z
     };
 
-    private Deque <Tile> bag;  // double ended queue initalized to store randomly generated tiles
+    private Deque<Tile> bag;  // double ended queue initalized to store randomly generated tiles
 
     /**
      * Constructor to initalize Bag with 98 random tiles
@@ -64,7 +64,7 @@ public class Bag {
     private void generateTilesRandomly() {
 
         //first create a list of available tiles
-        List <Tile> tileList = new ArrayList<> ();
+        List<Tile> tileList = new ArrayList<>();
         for (char tile : SCRABBLE_TILE_DISTRIBUTION ) {
             tileList.add(new Tile(tile));
         }

@@ -4,7 +4,7 @@ import java.util.List;
  * It is made of multiple tiles and stores the direction and location of
  * the word on the board. Also stores if a word is valid or unvalid.
  * It also stores which player came up with the word.021
-02 *
+ 02 *
  * @author Muhammad Maisam
  * @version 2024.10.22
  */
