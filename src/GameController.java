@@ -9,7 +9,6 @@
 public class GameController {
     private Parser parser;
     private ScrabbleGame game; ///change to game/////
-    //private ScrabbleGameA gameA;
     private GameView view;
     private int mode; //0 setup 1 play 2 word placement
     ///Following 5 attributes correspond to word placement
