@@ -1,7 +1,22 @@
+Team 10
+Muhammad Maisam
+Anique Ali
+Shenhao Gong
+Rafid Mehedi Hasan
+Note: This readme file might be the most updated on Github. Please refer to Readme file on Github.
 
+Deliverable 2:
+Note: Bugs are being tracked and will be pushed with the Readme file on Github. 
 
+How to play the Game?
+You have to drag the tile from the Rack to the board where you want to place it. 
+Once you place the tiles in order you press the 'Check' button to check if your word is valid. If word is valid the box will turn green. If not valid it will turn grey. You are then allowed to "Right Click" on the tile placed on the board (greyed out) to send it back to the rack. You have limited reroll and pass turns allowed. Hard coded to 3 turns right now.
 
+There are bugs in this game which we are working on to fix. The game should be compilable and should run successfully. If any problems are faced please reach out to us as the game runs on all our devices.
 
+Deliverable 1:
+
+There is more here (update in progress)
 Rack.java:
 Implemented by Muhammad Maisam.
 Requires proper java docs.

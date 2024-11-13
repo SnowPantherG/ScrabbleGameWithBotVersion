@@ -19,10 +19,13 @@ import java.util.*;
  * Another Implementation of Scrabble Game
  *
  * @author Shenhao Gong
- * @version v1.3 09th November 2024
+ * @version v2.0 09th November 2024
  * updated Game class, moved some command from Command class CommandWords class to here, because it is not a text based
  * game anymore.
  * added placeTile() command
+ *
+ * @author Muhammad Maisam
+ * @version v2.1 12 November 2024
  */
 public class ScrabbleGame {
     private Board board;
@@ -56,35 +59,6 @@ public class ScrabbleGame {
         }
     }
 
-   /* public boolean checkWord(String word, int row, int col, String direction) {
-        // Validate the word using the dictionary
-        if (!dictionary.isEnglishWord(word)) {
-            return false;
-        }
-
-        // Check if the placement is valid
-        String charactersNeeded = board.characters(word, row, col, direction);
-        Player player = players.get(currentPlayerIndex);
-        String playerRack = player.getRack_();
-
-        if (!canFormString(playerRack, charactersNeeded)) {
-            return false;
-        }
-
-        // Place the word on the board
-        board.placeWord(word, row, col, direction, player.getName());
-        removeTilesFromPlayer(player, charactersNeeded);
-
-        // Update the player's score
-        int wordScore = calculateWordScore(word);
-        player.incrementScore(wordScore);
-
-        // Store the last placed word
-        lastPlacedWord = new Word(convertStringToTiles(word), direction, row, col, player.getName());
-
-        return true;
-    }*/
-
     public void nextTurn() {
         if (isGameOver()) {
             // Handle game over logic
@@ -93,7 +67,6 @@ public class ScrabbleGame {
         }
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
     }
-
 
     public boolean reroll() {
         Player player = players.get(currentPlayerIndex);
@@ -157,29 +130,6 @@ public class ScrabbleGame {
             System.out.println("Position: (" + row + ", " + col + "), Letter: " + tile.getLetter() +
                     ", Value: " + tileValue + ", SquareType: " + squareType + ", isNewTile: " + isNewTile);
 
-            if (isNewTile) {
-                switch (squareType) {
-                    case DOUBLE_LETTER:
-                        letterMultiplier = 2;
-                        System.out.println("Applied DOUBLE_LETTER multiplier");
-                        break;
-                    case TRIPLE_LETTER:
-                        letterMultiplier = 3;
-                        System.out.println("Applied TRIPLE_LETTER multiplier");
-                        break;
-                    case DOUBLE_WORD:
-                        wordMultiplier *= 2;
-                        System.out.println("Applied DOUBLE_WORD multiplier");
-                        break;
-                    case TRIPLE_WORD:
-                        wordMultiplier *= 3;
-                        System.out.println("Applied TRIPLE_WORD multiplier");
-                        break;
-                    default:
-                        break;
-                }
-            }
-
             wordScore += tileValue * letterMultiplier;
         }
 
@@ -195,8 +145,6 @@ public class ScrabbleGame {
 
         return wordScore;
     }
-
-
 
     private List<Tile> convertStringToTiles(String word) {
         List<Tile> tiles = new ArrayList<>();
@@ -243,7 +191,6 @@ public class ScrabbleGame {
         return true;
     }
 
-
     /**
      * place the tile on the to the board
      * */
@@ -270,32 +217,6 @@ public class ScrabbleGame {
         }
     }
 
-    /*public String getWordFromBoard() {
-        Collections.sort(lastPlacedTiles, Comparator.comparingInt(p -> p.col));
-        StringBuilder wordBuilder = new StringBuilder();
-        for (Position pos : lastPlacedTiles) {
-            Tile tile = board.getTileAt(pos.row, pos.col);
-            wordBuilder.append(tile.getLetter());
-        }
-        return wordBuilder.toString();
-    }
-
-    public boolean checkWordOnBoard(String word) {
-        // Validate the word using the dictionary
-        if (!dictionary.isEnglishWord(word)) {
-            return false;
-        }
-        // Update the player's score
-        int wordScore = calculateWordScore(word);
-        getCurrentPlayer().incrementScore(wordScore);
-        // Clear lastPlacedTiles for the next turn
-        lastPlacedTiles.clear();
-        return true;
-    }*/
-
-
-
-
     public void removeTileFromBoard(char letter, int row, int col) {
         Tile tile = board.getTileAt(row, col);
         if (tile != null && tile.getLetter() == letter) {
@@ -307,7 +228,6 @@ public class ScrabbleGame {
             System.out.println("Error: Tile on board does not match.");
         }
     }
-
 
     public void addTileToRack(char letter, int index) {
         Tile tile = new Tile(letter);
@@ -377,13 +297,9 @@ public class ScrabbleGame {
         return newWords;
     }
 
-
-
     public boolean isValidWord(String word) {
         return dictionary.isEnglishWord(word.toLowerCase());
     }
-
-
 
     public void finalizeTurn() {
         // Mark the last placed tiles as fixed
@@ -404,7 +320,6 @@ public class ScrabbleGame {
     public boolean isFirstWord() {
         return !firstWordPlayed;
     }
-
 
     public void refillPlayerRack(Player player) {
         while (player.getTiles().size() < 7 && !tileBag.isEmpty()) {
@@ -503,8 +418,6 @@ public class ScrabbleGame {
         return new WordInfo(word, positions);
     }
 
-
-
     public void resetGame() {
         board = new Board();
         players.clear();
@@ -514,7 +427,72 @@ public class ScrabbleGame {
         // Reset any other necessary game state variables
     }
 
+    public boolean isNewTilesConnected() {
+        if (lastPlacedTiles.isEmpty()) {
+            return false;
+        }
+
+        // check new places tile are connected
+        boolean newTilesConnected = areNewTilesConnected();
+        if (!newTilesConnected) {
+            return false;
+        }
+
+        // if it is the first tile, then no need to check
+        if (!firstWordPlayed) {
+            return true;
+        }
 
 
+        for (Position pos : lastPlacedTiles) {
+            int row = pos.row;
+            int col = pos.col;
+
+            // check up,down,left,right
+            if ((row > 0 && board.isTileFixed(row - 1, col) && !lastPlacedTiles.contains(new Position(row - 1, col))) ||
+                    (row < 14 && board.isTileFixed(row + 1, col) && !lastPlacedTiles.contains(new Position(row + 1, col))) ||
+                    (col > 0 && board.isTileFixed(row, col - 1) && !lastPlacedTiles.contains(new Position(row, col - 1))) ||
+                    (col < 14 && board.isTileFixed(row, col + 1) && !lastPlacedTiles.contains(new Position(row, col + 1)))) {
+                return true;
+            }
+        }
+
+        // no connected tiles
+        return false;
+    }
+
+    private boolean areNewTilesConnected() {
+        if (lastPlacedTiles.size() <= 1) {
+            return true; // only one tile, which means is vaild
+        }
+
+        // new learnt algorithm : BFS breadth-First Search
+        Set<Position> visited = new HashSet<>();
+        Queue<Position> queue = new LinkedList<>();
+        Position start = lastPlacedTiles.get(0);
+        queue.add(start);
+        visited.add(start);
+
+        while (!queue.isEmpty()) {
+            Position current = queue.poll();
+
+            // check neighbour  tiles
+            int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+            for (int[] dir : directions) {
+                int newRow = current.row + dir[0];
+                int newCol = current.col + dir[1];
+                Position neighbor = new Position(newRow, newCol);
+
+                if (newRow >= 0 && newRow < 15 && newCol >= 0 && newCol < 15 &&
+                        lastPlacedTiles.contains(neighbor) && !visited.contains(neighbor)) {
+                    queue.add(neighbor);
+                    visited.add(neighbor);
+                }
+            }
+        }
+
+        // see of all the tiles are checked
+        return visited.size() == lastPlacedTiles.size();
+    }
 
 }

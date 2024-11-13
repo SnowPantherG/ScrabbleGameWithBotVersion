@@ -26,13 +26,7 @@ public class Player {
     private Rack rack;
     private int currentScore; // current score
     private int status; //0: quit or disqualified from playing or 1: is playing
-
     private int rerollCount;// reroll time
-//
-
-    //private int wins; // round of wins
-    //private int rerollCount; //how many times of reroll left
-    //private boolean isCurrentPlayer;
     private int skipTurns; // turns left
 
 
@@ -46,9 +40,6 @@ public class Player {
         this.rack = new Rack();
         this.currentScore = 0;
         this.status = 1;
-        //this.wins = 0;
-        //this.isCurrentPlayer = false; // not play in current round  //checkk
-        //this.rerollCount=10;
         this.skipTurns = 3; //default turns to 3
         this.rerollCount = 3; // Players have 3 rerolls
     }
@@ -153,7 +144,7 @@ public class Player {
     /**
      * Removes a specified tile from the player's list of tiles.
      *
-     * @param int of The tile index to be removed.
+     * @param index of The tile index to be removed.
      */
     public Tile removeTile(int index) {
         return rack.removeTile(index);

@@ -26,7 +26,7 @@ public class WordDictionary {
 
 
     private void loadWords() {
-        try (BufferedReader reader = new BufferedReader(new FileReader("src/10000_common_words.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("10000_common_words.txt")))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 words.add(line.trim().toLowerCase());

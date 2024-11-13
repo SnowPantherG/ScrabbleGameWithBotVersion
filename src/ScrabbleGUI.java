@@ -142,7 +142,6 @@ public class ScrabbleGUI extends JFrame {
     /**
      * Sets up action listener for the buttons.
      */
-
     private void setupActionListeners() {
         // Store the combo box reference for cleaner access
         JComboBox<?> playerComboBox = (JComboBox<?>)
@@ -200,35 +199,9 @@ public class ScrabbleGUI extends JFrame {
      * @param row The row square
      * @param col The column of square
      */
-
     private void setSquareAppearance(JButton button, SquareType squareType, int row, int col) {
-        switch (squareType) {
-            case TRIPLE_WORD:
-                button.setBackground(Color.RED.darker());
-                button.setText("TW");
-                break;
-            case DOUBLE_WORD:
-                button.setBackground(Color.PINK);
-                if (row == 7 && col == 7) {
-                    button.setFont(new Font("Arial Unicode MS", Font.BOLD, 28));
-                    button.setText("★"); // Center square
-                } else {
-                    button.setText("DW");
-                }
-                break;
-            case TRIPLE_LETTER:
-                button.setBackground(Color.BLUE.darker());
-                button.setText("TL");
-                break;
-            case DOUBLE_LETTER:
-                button.setBackground(Color.CYAN);
-                button.setText("DL");
-                break;
-            default:
-                button.setBackground(Color.WHITE);
-                button.setText("");
-                break;
-        }
+        button.setBackground(Color.WHITE);
+        button.setText("");
     }
 
     /**
@@ -355,7 +328,6 @@ public class ScrabbleGUI extends JFrame {
         repaint();
     }
 
-
     /**
      * Handles checking if word is correct through game controller method checkWord()
      */
@@ -394,11 +366,8 @@ public class ScrabbleGUI extends JFrame {
                     // Set the basic appearance
                     setSquareAppearance(button, squareType, row, col);
 
-                    // Ensure center square appears correctly
-                    if (row == 7 && col == 7 && squareType == SquareType.DOUBLE_WORD) {
-                        button.setFont(new Font("Arial Unicode MS", Font.BOLD, 28));
-                        button.setText("★");
-                    }
+
+
 
                     button.setEnabled(true);
                     button.setOpaque(true);
@@ -540,7 +509,6 @@ public class ScrabbleGUI extends JFrame {
         }
     }
 
-
     // MouseAdapter to initiate drag from tile labels
     class DragMouseAdapter extends MouseAdapter {
         @Override
@@ -588,7 +556,6 @@ public class ScrabbleGUI extends JFrame {
      * Shows current players name in message area
      * @param playerName Name of current player
      */
-
     public void showCurrentPlayer(String playerName) {
         messageArea.append("\nCurrent player: " + playerName + "\n");
     }
