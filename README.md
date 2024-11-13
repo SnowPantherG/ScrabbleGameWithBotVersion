@@ -6,7 +6,8 @@ Shenhao Gong
 Rafid Mehedi Hasan
 Note: This readme file might be the most updated on Github. Please refer to Readme file on Github.
 
-Deliverable 2:
+Deliverable 2: Submission on del2 branch
+
 Note: Bugs are being tracked and will be pushed with the Readme file on Github. 
 
 How to play the Game?
