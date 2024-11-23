@@ -43,6 +43,10 @@ public class GameController implements GameListener{
 
     public void checkWord() {
         List<WordInfo> newWords = game.getNewWordsFormed();
+        if(newWords.isEmpty()){
+            System.out.println("no words were found");
+            return;
+        }
         boolean allValid = true;
         if (!game.isNewTilesConnected()) {
             gui.showMessage("Tiles must be connected.");
