@@ -30,7 +30,7 @@ public class AIPlayer extends Player {
      *
      * @param game       The current state of the Scrabble game.
      * @param dictionary The dictionary to use for word validation.
-     * @return
+     * @return boolean Returns true if word was placed successfully; false otherwise and turn is passed
      */
     public boolean aiPlay(ScrabbleGame game, WordDictionary dictionary) {
         Board board = game.getBoard();
@@ -106,7 +106,7 @@ public class AIPlayer extends Player {
      * @param game  The current state of the Scrabble game.
      * @param board The current state of the board.
      * @param word  The word to be placed.
-     * @return True if the word was successfully placed, false otherwise.
+     * @return Returns true if the word was successfully placed, false otherwise.
      */
     private boolean tryPlaceWord(ScrabbleGame game, Board board, String word, String rack) {
         word = word.toUpperCase(); // Ensure word is in uppercase
