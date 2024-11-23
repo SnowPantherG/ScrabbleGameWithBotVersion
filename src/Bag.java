@@ -4,10 +4,10 @@ import java.util.*;
  * Bag class will act as bag in the scrabble game, the maximum tiles will be 98 which will represent alphabets on tiles.
  * The bag class will check if bag is empty, when tiles is drawed or used from bag it will reduce count.
  *
- * @version v1, 20th October, 2024
+ * @version v1, 20th October 2024
  * @author Anique Ali
  *
- * @version v1.1, 21st October, 2024
+ * @version v1.1, 21st October 2024
  * updated the Bag deque, change of type from character to tile object
  * @author Shenhao Gong
  *
@@ -108,13 +108,14 @@ public class Bag {
 
     /**
      * The method addTile is responsible for adding a tile to the bag used for reshuffling rack.
+     *
      * @throws IllegalStateException if the bag is full
      */
     public void addTile(Tile tile){
         if (this.getRemainingTiles() >= 98){
             throw new IllegalStateException("The bag is full"); // stateException is to handle full bag.
         }
-        //return
+
         bag.addLast(tile); // we will add the tile
     }
 

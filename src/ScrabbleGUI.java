@@ -28,6 +28,7 @@ public class ScrabbleGUI extends JFrame {
     private JPanel rackPanel;
     private JLabel[] rackLabels;
     private JComboBox<String> playerComboBox;
+    private JComboBox<String> aiPlayerComboBox;
 
     // Declare buttons for the start panel
     private JButton playButton;
@@ -38,7 +39,11 @@ public class ScrabbleGUI extends JFrame {
     private JButton checkButton;
     private JButton passButton;
     private JButton rerollButton;
-    
+
+    private JMenuItem endGameMenuItem;
+
+    private final Font tileFont=new Font("Arial Unicode MS",Font.BOLD,20);
+
     /**
      * Create a new Scrabble game with specific controller, initializes the UI and
      * @param controller the controller hat will be managing logic at back
@@ -63,7 +68,7 @@ public class ScrabbleGUI extends JFrame {
      */
     private void setupFrame(){
         setTitle("Scrabble Game");
-        setSize(600, 300);
+        setSize(600, 400);
         setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -97,18 +102,31 @@ public class ScrabbleGUI extends JFrame {
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
 
-        // Number of Players Panel
+        // Number of Human Players Panel
         JPanel playerSelectionPanel = new JPanel();
-        JLabel playerLabel = new JLabel("Number of Players:");
+        JLabel playerLabel = new JLabel("Number of Human Players:");
         playerLabel.setFont(new Font("Arial", Font.PLAIN, 24)); // Increased font size
         playerSelectionPanel.add(playerLabel);
 
-        String[] playerOptions = { "2", "3", "4" };
-        JComboBox<String> playerComboBox = new JComboBox<>(playerOptions);
+        String[] playerOptions = { "1", "2", "3", "4" };
+        playerComboBox = new JComboBox<>(playerOptions);
         playerComboBox.setFont(new Font("Arial", Font.PLAIN, 24)); // Increased font size
         playerSelectionPanel.add(playerComboBox);
 
         centerPanel.add(playerSelectionPanel);
+
+        // Number of AI Players Panel
+        JPanel aiPlayerSelectionPanel = new JPanel();
+        JLabel aiPlayerLabel = new JLabel("Number of AI Players:");
+        aiPlayerLabel.setFont(new Font("Arial", Font.PLAIN, 24)); // Increased font size
+        aiPlayerSelectionPanel.add(aiPlayerLabel);
+
+        String[] aiPlayerOptions = { "0", "1", "2", "3" };
+        aiPlayerComboBox = new JComboBox<>(aiPlayerOptions);
+        aiPlayerComboBox.setFont(new Font("Arial", Font.PLAIN, 24)); // Increased font size
+        aiPlayerSelectionPanel.add(aiPlayerComboBox);
+
+        centerPanel.add(aiPlayerSelectionPanel);
 
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.Y_AXIS));
@@ -142,16 +160,26 @@ public class ScrabbleGUI extends JFrame {
     /**
      * Sets up action listener for the buttons.
      */
-
     private void setupActionListeners() {
         // Store the combo box reference for cleaner access
         JComboBox<?> playerComboBox = (JComboBox<?>)
                 ((JPanel)((JPanel)startPanel.getComponent(1)).getComponent(0)).getComponent(1);
 
+        JComboBox<?> aiPlayerComboBox = (JComboBox<?>)
+                ((JPanel)((JPanel)startPanel.getComponent(1)).getComponent(1)).getComponent(1);
+
         playButton.addActionListener(e -> {
-            int numPlayers = Integer.parseInt((String) playerComboBox.getSelectedItem());
+            int numHumanPlayers = Integer.parseInt((String) playerComboBox.getSelectedItem());
+            int numAIPlayers = Integer.parseInt((String) aiPlayerComboBox.getSelectedItem());
+
+            // Ensure the total number of players is not greater than 4
+            if (numHumanPlayers + numAIPlayers > 4) {
+                JOptionPane.showMessageDialog(this, "The total number of players cannot exceed 4.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             showGamePanel();
-            controller.startGame(numPlayers);
+            controller.startGame(numHumanPlayers, numAIPlayers);
+            endGameMenuItem.setEnabled(true);
         });
 
         helpButtonStart.addActionListener(e -> showHelpDialog());
@@ -167,11 +195,12 @@ public class ScrabbleGUI extends JFrame {
         // Game menu
         JMenu gameMenu = new JMenu("Game");
         JMenuItem restartMenuItem = new JMenuItem("Restart");
-        JMenuItem endGameMenuItem = new JMenuItem("End Game");
+        endGameMenuItem = new JMenuItem("End Game");
         JMenuItem quitMenuItem = new JMenuItem("Quit");
 
         restartMenuItem.addActionListener(e -> controller.restartGame());
         endGameMenuItem.addActionListener(e -> controller.endGame());
+        endGameMenuItem.setEnabled(false);   //while no game is playing, initially set disabled
         quitMenuItem.addActionListener(e -> System.exit(0));
 
         gameMenu.add(restartMenuItem);
@@ -200,7 +229,6 @@ public class ScrabbleGUI extends JFrame {
      * @param row The row square
      * @param col The column of square
      */
-
     private void setSquareAppearance(JButton button, SquareType squareType, int row, int col) {
         switch (squareType) {
             case TRIPLE_WORD:
@@ -217,7 +245,7 @@ public class ScrabbleGUI extends JFrame {
                 }
                 break;
             case TRIPLE_LETTER:
-                button.setBackground(Color.BLUE.darker());
+                button.setBackground(Color.orange);
                 button.setText("TL");
                 break;
             case DOUBLE_LETTER:
@@ -355,7 +383,6 @@ public class ScrabbleGUI extends JFrame {
         repaint();
     }
 
-
     /**
      * Handles checking if word is correct through game controller method checkWord()
      */
@@ -375,6 +402,7 @@ public class ScrabbleGUI extends JFrame {
                 JButton button = boardButtons[row][col];
                 if (tile != null) {
                     button.setText(String.valueOf(tile.getLetter()));
+                    button.setFont(tileFont);
                     button.setForeground(Color.BLACK); // Ensure the text is visible
                     button.putClientProperty("hasTile", true); // Mark that the button has a tile
                     if (board.isTileFixed(row, col)) {
@@ -434,6 +462,7 @@ public class ScrabbleGUI extends JFrame {
             }
         }
     }
+
 
     public void showMessage(String message) {
         messageArea.append(message + "\n");
@@ -540,7 +569,6 @@ public class ScrabbleGUI extends JFrame {
         }
     }
 
-
     // MouseAdapter to initiate drag from tile labels
     class DragMouseAdapter extends MouseAdapter {
         @Override
@@ -576,8 +604,12 @@ public class ScrabbleGUI extends JFrame {
             if (originalFont != null) {
                 button.setFont(originalFont);
             } else {
-                // Set to default font if originalFont is null
-                button.setFont(new Font("Arial", Font.BOLD, 14));
+                if(row==7&&col==7){
+                    button.setFont(new Font("Arial Unicode MS", Font.BOLD, 28));
+                }else{
+                     // Set to default font if originalFont is null
+                      button.setFont(new Font("Arial", Font.BOLD, 14));
+                }
             }
             // Notify the controller to remove the tile from the board and add it back to the rack
             controller.removeTileFromBoard(letter.charAt(0), row, col);
@@ -588,9 +620,10 @@ public class ScrabbleGUI extends JFrame {
      * Shows current players name in message area
      * @param playerName Name of current player
      */
-
-    public void showCurrentPlayer(String playerName) {
+    public void showCurrentPlayer(String playerName, int reroll) {
         messageArea.append("\nCurrent player: " + playerName + "\n");
+        messageArea.append("\nPass time left:"+ reroll +"\n");
+
     }
 
     /**
@@ -632,5 +665,9 @@ public class ScrabbleGUI extends JFrame {
                 button.setEnabled(false);
             }
         }
+    }
+
+    public JMenuItem getEndGameMenuItem() {
+        return endGameMenuItem;
     }
 }
