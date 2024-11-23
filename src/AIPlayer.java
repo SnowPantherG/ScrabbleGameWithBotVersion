@@ -444,6 +444,11 @@ public class AIPlayer extends Player {
         return false;
     }
 
+    /**
+     * Identifies all valid anchor points on the board where new words can be placed
+     * @param board The current state of the board
+     * @return List lists of all valid positions where new words can be placed
+     */
     private List<Position> getAnchorPoints(Board board) {
         List<Position> anchorPoints = new ArrayList<>();
         int boardSize = board.getBoardSize();
