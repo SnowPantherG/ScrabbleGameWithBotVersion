@@ -100,10 +100,10 @@ public class Tile {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true; // check if both reference points to same object
-        if (!(obj instanceof Tile)) return false; // check if obj is instance of tile, if it is not return false
-        Tile other = (Tile) obj; // cast obj as tile and compare the letter field
-        return this.letter == other.letter;
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Tile tile = (Tile) obj;
+        return letter == tile.letter;
     }
 
     /**
@@ -120,7 +120,7 @@ public class Tile {
      * @return The letter and value on the tile as a string
      */
 
-    public String tileDescription() {
-        return "{" + letter + ", " + value + "}";
+    public int hashCode() {
+        return System.identityHashCode(this);
     }
 }
