@@ -1,5 +1,3 @@
-
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -10,8 +8,16 @@ import java.util.stream.Collectors;
  * The AIPlayer class represents a computer-controlled player in the Scrabble game.
  * It extends the Player class and adds the ability to make automated moves.
  */
+
 public class AIPlayer extends Player {
     WordDictionary dictionary;
+
+
+
+    /**
+     * Create new AI player with a name
+     * @param name The name of the AI player
+     */
     public AIPlayer(String name) {
         super(name);
         dictionary=new WordDictionary();
@@ -93,10 +99,6 @@ public class AIPlayer extends Player {
         return false;
     }
 
-
-
-
-
     /**
      * Attempts to place a word on the board. This implementation tries to place the word
      * connecting to existing tiles on the board to form a valid word.
@@ -172,8 +174,6 @@ public class AIPlayer extends Player {
         return false;
     }
 
-
-
     /**
      * Handles score calculation and finalizing the turn after placing a word.
      *
@@ -209,13 +209,6 @@ public class AIPlayer extends Player {
 
         return true;
     }
-
-
-
-
-
-
-
 
     /**
      * Determines if a word can be placed on the board in the specified direction.
@@ -348,12 +341,6 @@ public class AIPlayer extends Player {
         return canPlaceWord(board, word, row, col, isFirstWord, rack, tilesToPlace, Direction.VERTICAL);
     }
 
-
-
-
-
-
-
     private void placeWord(ScrabbleGame game, List<TilePlacement> tilesToPlace) {
         Player currentPlayer = game.getCurrentPlayer();
         System.out.println("Player's rack before placement: " + currentPlayer.getRack());
@@ -416,7 +403,6 @@ public class AIPlayer extends Player {
             currentPlayer.addTile(tile);
         }
     }
-
 
     public String getAvailableBoardLetters(Board board) {
         Set<Character> boardLetters = new HashSet<>();
