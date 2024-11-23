@@ -472,15 +472,6 @@ public class AIPlayer extends Player {
         return anchorPoints;
     }
 
-    private Tile getTileFromRack(char letter, List<Tile> rackTiles) {
-        for (int i = 0; i < rackTiles.size(); i++) {
-            if (rackTiles.get(i).getLetter() == letter) {
-                return rackTiles.remove(i);
-            }
-        }
-        return null;
-    }
-
     /**
      * This static class represents the placement of tile on the board with it's position and letter
      */
