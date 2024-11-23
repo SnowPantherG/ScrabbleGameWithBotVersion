@@ -476,12 +476,20 @@ public class AIPlayer extends Player {
         return null;
     }
 
-
+    /**
+     * This static class represents the placement of tile on the board with it's position and letter
+     */
     private static class TilePlacement {
         char letter;
         int row;
         int col;
 
+        /**
+         * Constructs a new tile placement object.
+         * @param letter The letter to be placed
+         * @param row The position of the row
+         * @param col The position of the column
+         */
         public TilePlacement(char letter, int row, int col) {
             this.letter = letter;
             this.row = row;
@@ -489,6 +497,9 @@ public class AIPlayer extends Player {
         }
     }
 
+    /**
+     * Represents different direction to place the word on the board.
+     */
     public enum Direction {
         HORIZONTAL(0, 1),
         VERTICAL(1, 0);
@@ -496,15 +507,28 @@ public class AIPlayer extends Player {
         private final int deltaRow;
         private final int deltaCol;
 
+        /**
+         * Creates a Direction enum value using deltas for movement.
+         * @param deltaRow change in row position
+         * @param deltaCol change in column position
+         */
         Direction(int deltaRow, int deltaCol) {
             this.deltaRow = deltaRow;
             this.deltaCol = deltaCol;
         }
 
+        /**
+         * Getter to get the row movement delta for the direction
+         * @return int The change in the row position
+         */
         public int getDeltaRow() {
             return deltaRow;
         }
 
+        /**
+         * Getter to get the column movement delta for the direction
+         * @return int The change in column position
+         */
         public int getDeltaCol() {
             return deltaCol;
         }
