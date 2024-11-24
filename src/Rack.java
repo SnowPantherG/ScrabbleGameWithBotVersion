@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -12,6 +13,10 @@ import java.util.List;
  * @version 2024.11.09
  * added clearTile() method
  *
+ * @author  Shenhao Gong
+ * @version 2024.11.22
+ * modify removeTile to return boolean
+ *
  */
 
 public class Rack {
@@ -22,19 +27,31 @@ public class Rack {
     }
     public void addTile(Tile newTile) {
         if (tiles.size() < 7) {
-            tiles.add(newTile);
-        }else{throw new IllegalStateException("The rack is full");}
+            tiles.add(newTile); // Alternatively, insert at a specific index if needed
+        } else {
+            throw new IllegalStateException("The rack is full");
+        }
     }
+
     public Tile removeTile(Tile newTile) {
-        if (tiles.size() > 0) {
-            tiles.remove(newTile);
-            return newTile;
-        }else{throw new IllegalStateException("The rack is empty");}
+        Iterator<Tile> iterator = tiles.iterator();
+        while (iterator.hasNext()) {
+            Tile currentTile = iterator.next();
+            // Ensure it is removing the same instance, not just by letter
+            if (currentTile == newTile) {
+                iterator.remove();
+                return currentTile; // Tile successfully removed
+            }
+        }
+        throw new IllegalStateException("Tile not found in rack"); // Tile not found in rack
     }
+
     public Tile removeTile(int index) {
-        if (tiles.size() > 0) {
+        if (tiles.size() > 0 && index >= 0 && index < tiles.size()) {
             return tiles.remove(index);
-        }else{throw new IllegalStateException("The rack is empty");}
+        } else {
+            throw new IllegalStateException("Invalid index or the rack is empty");
+        }
     }
 
     public List<Tile> getTiles() {
@@ -63,4 +80,6 @@ public class Rack {
     public void clearTiles(){
         tiles.clear();
     }
+
+
 }

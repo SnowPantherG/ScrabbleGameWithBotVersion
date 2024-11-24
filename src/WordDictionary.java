@@ -1,6 +1,8 @@
 import java.io.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -15,6 +17,10 @@ import java.util.Set;
  * @author Shenhao Gong
  * change 5000_common_word to 10000_common_words
  *
+ * @version v3 22nd November,2024
+ * @author Shenhao Gong
+ * added getAllWord() for AIplayers
+ *
  */
 public class WordDictionary {
     private Set<String> words;
@@ -26,7 +32,7 @@ public class WordDictionary {
 
 
     private void loadWords() {
-        try (BufferedReader reader = new BufferedReader(new FileReader("src/10000_common_words.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("10000_common_words.txt")))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 words.add(line.trim().toLowerCase());
@@ -64,5 +70,9 @@ public class WordDictionary {
             i++;
         }
         return null;
+    }
+
+    public List<String> getAllWords() {
+        return words.stream().collect(Collectors.toList());
     }
 }
