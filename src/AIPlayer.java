@@ -8,6 +8,13 @@ import java.util.stream.Collectors;
  * The AIPlayer class represents a computer-controlled player in the Scrabble game.
  * It extends the Player class and adds the ability to make automated moves.
  *
+ *
+ * @version v1, 23rd November 2024
+ * @author Shenhao Gong
+ *
+ * @version v2, 23rd November 2024
+ * @author Anique Ali
+ *
  */
 
 public class AIPlayer extends Player {
