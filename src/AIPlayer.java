@@ -7,11 +7,11 @@ import java.util.stream.Collectors;
 /**
  * The AIPlayer class represents a computer-controlled player in the Scrabble game.
  * It extends the Player class and adds the ability to make automated moves.
+ *
  */
 
 public class AIPlayer extends Player {
     WordDictionary dictionary;
-
 
 
     /**
@@ -341,6 +341,12 @@ public class AIPlayer extends Player {
         return canPlaceWord(board, word, row, col, isFirstWord, rack, tilesToPlace, Direction.VERTICAL);
     }
 
+    /**
+     * Places word on the board with specified tile placements. Handles the
+     * removal of the tiles from board and has capability to restore rack back if placement fails.
+     * @param game
+     * @param tilesToPlace
+     */
     private void placeWord(ScrabbleGame game, List<TilePlacement> tilesToPlace) {
         Player currentPlayer = game.getCurrentPlayer();
         System.out.println("Player's rack before placement: " + currentPlayer.getRack());
@@ -385,18 +391,27 @@ public class AIPlayer extends Player {
 
     /**
      * Places a word horizontally on the board.
+     * @param game The current stat eof scrabble game
+     * @param tilesToPlace List of tiles to be placed
      */
     private void placeWordHorizontally(ScrabbleGame game, List<TilePlacement> tilesToPlace) {
         placeWord(game, tilesToPlace);
     }
 
     /**
-     * Places a word vertically on the board.
+     * Places a word vertically on the board
+     * @param game The current stat eof scrabble game
+     * @param tilesToPlace List of tiles to be placed
      */
     private void placeWordVertically(ScrabbleGame game, List<TilePlacement> tilesToPlace) {
         placeWord(game, tilesToPlace);
     }
 
+    /**
+     * Restores player's rack to its original state
+     * @param currentPlayer The player whose rack needs to be restored
+     * @param originalRack The original list of tiles to restore
+     */
     private void restoreOriginalRack(Player currentPlayer, List<Tile> originalRack) {
         currentPlayer.clearTiles();
         for (Tile tile : originalRack) {
@@ -455,6 +470,7 @@ public class AIPlayer extends Player {
         return false;
     }
 
+
     /**
      * Identifies all valid anchor points on the board where new words can be placed
      * @param board The current state of the board
@@ -482,6 +498,7 @@ public class AIPlayer extends Player {
 
         return anchorPoints;
     }
+
 
     /**
      * This static class represents the placement of tile on the board with it's position and letter
