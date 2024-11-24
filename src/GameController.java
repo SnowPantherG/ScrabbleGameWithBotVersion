@@ -23,20 +23,34 @@ public class GameController implements GameListener{
         gui.setVisible(true);
     }
 
-    public void startGame(int numPlayers) {
-        game.play(numPlayers);
+    public void startGame(int numHumanPlayers, int numAIPlayers) {
+        int totalPlayers = numHumanPlayers + numAIPlayers;
+
+        // Ensure that the total number of players does not exceed 4
+        if (totalPlayers > 4) {
+            throw new IllegalArgumentException("The total number of players cannot exceed 4.");
+        }
+
+        // Start the game with the specified number of human and AI players
+        game.play(numHumanPlayers, numAIPlayers);
+
+        // Update the GUI to reflect the state of the game
         gui.updateBoard(game.getBoard());
         gui.updateRack(game.getCurrentPlayer().getTiles());
         gui.updateScoreboard(game.getPlayers());
-        gui.showMessage("Game started with " + numPlayers + " players.");
+        gui.showMessage("Game started with " + numHumanPlayers + " human players and " + numAIPlayers + " AI players.");
     }
 
     public void checkWord() {
         List<WordInfo> newWords = game.getNewWordsFormed();
+        if(newWords.isEmpty()){
+            System.out.println("no words were found");
+            return;
+        }
         boolean allValid = true;
         if (!game.isNewTilesConnected()) {
-            gui.showMessage("Tiles must connected。");
-            allValid= false;
+            gui.showMessage("Tiles must be connected.");
+            allValid = false;
         }
         // Validate each new word formed
         for (WordInfo wordInfo : newWords) {
@@ -60,21 +74,26 @@ public class GameController implements GameListener{
             // Update the player's score
             game.getCurrentPlayer().incrementScore(totalScore);
 
+            // Finalize the human player's turn
+            game.finalizeTurn();
+
+            // Advance to the next player's turn
+            game.nextTurn();
+
             // Update the GUI
             gui.updateScoreboard(game.getPlayers());
-            game.finalizeTurn();
             gui.updateBoard(game.getBoard());
             gui.updateRack(game.getCurrentPlayer().getTiles());
-            gui.showCurrentPlayer(game.getCurrentPlayer().getName());
+            gui.showCurrentPlayer(game.getCurrentPlayer().getName(),game.getCurrentPlayer().getSkipTurns());
 
             // Inform the player
-            gui.showMessage("The word: "+newWords.get(0).word+" is vaild\n"
-                    +"Total score for this turn: " + totalScore);
+            gui.showMessage("The word: " + newWords.get(0).word + " is valid\n"
+                    + "Total score for this turn: " + totalScore);
         } else {
             // Handle invalid word scenario
             gui.showMessage("Your move was invalid. Please adjust your tiles.");
             // Optionally, remove the placed tiles and return them to the player's rack
-            //game.resetLastMove();
+            // game.resetLastMove();
             gui.updateBoard(game.getBoard());
             gui.updateRack(game.getCurrentPlayer().getTiles());
         }
@@ -84,12 +103,14 @@ public class GameController implements GameListener{
 
 
 
+
     public void passTurn() {
         if(game.getCurrentPlayer().getSkipTurns()>0) {
             game.pass();
+            updateGameState();
             gui.showMessage("Player passed. Next player's turn.");
+            gui.showMessage("Player has " + game.getCurrentPlayer().getSkipTurns()+ " skip left");
             gui.updateRack(game.getCurrentPlayer().getTiles());
-
         } else{
             gui.showMessage("Player has passed more than allowed turns.");
         }
@@ -124,15 +145,22 @@ public class GameController implements GameListener{
         game.placeTile(letter, row, col);
     }
 
+
+
+
     public ScrabbleGame getGame() {
         return game;
     }
 
     public void removeTileFromBoard(char letter, int row, int col) {
-        game.removeTileFromBoard(letter, row, col);
-        // Update the GUI rack to reflect the added tile
-        gui.updateRack(game.getCurrentPlayer().getTiles());
+        boolean success = game.removeTileFromBoard(letter, row, col);
+        if (success) {
+            gui.updateRack(game.getCurrentPlayer().getTiles());
+        } else {
+            gui.showMessage("Cannot remove a fixed tile.");
+        }
     }
+
 
     public void addTileToRack(char letter, int index) {
         game.addTileToRack(letter, index);
@@ -148,8 +176,12 @@ public class GameController implements GameListener{
         gui.showMessage("Game Over!");
         gui.displayFinalScores(game.getPlayers());
         gui.disableGameActions();
+
     }
 
+    public void onTurnEnd(){
+        updateGameState();
+    }
     public void endGame() {
         game.endGame();
         // The onGameEnd() method will be called via the listener
@@ -163,6 +195,19 @@ public class GameController implements GameListener{
             this.gui = new ScrabbleGUI(this);
             gui.setVisible(true);
         }
+    }
+
+    public void nextTurn(){
+        game.nextTurn();
+
+        updateGameState();
+    }
+
+    private void updateGameState() {
+        gui.updateBoard(game.getBoard());
+        gui.updateRack(game.getCurrentPlayer().getTiles());
+        gui.updateScoreboard(game.getPlayers());
+        gui.showCurrentPlayer(game.getCurrentPlayer().getName(), game.getCurrentPlayer().getSkipTurns());
     }
 
 }

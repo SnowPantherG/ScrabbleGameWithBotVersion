@@ -47,13 +47,24 @@ public class ScrabbleGame {
         currentPlayerIndex = 0;
     }
 
-    public void play(int numPlayers){
-        for (int i = 0; i < numPlayers; i++) {
+    public void play(int numHumanPlayers, int numAIPlayers) {
+        // board = new Board();
+
+        int totalPlayers = numHumanPlayers + numAIPlayers;
+        if (totalPlayers > 4) {
+            throw new IllegalArgumentException("The maximum number of players is 4.");
+        }
+
+        for (int i = 0; i < numHumanPlayers; i++) {
             players.add(new Player("Player " + (i + 1)));
         }
+        for (int i = 0; i < numAIPlayers; i++) {
+            players.add(new AIPlayer("AI Player " + (i + 1)));
+        }
+
         // Initialize the game by dealing tiles to players
         for (Player player : players) {
-            for (int i = 0; i < 7; i++) {
+            while (player.getTiles().size() < 7 && !tileBag.isEmpty()) {
                 player.addTile(tileBag.removeTile());
             }
         }
@@ -65,7 +76,39 @@ public class ScrabbleGame {
             endGame();
             return;
         }
-        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+
+        int playersChecked = 0;
+        do {
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+            playersChecked++;
+            if (playersChecked > players.size()) {
+                // All players have status == 0, game over
+                endGame();
+                return;
+            }
+        } while (players.get(currentPlayerIndex).getCurrentStatus() == 0);
+
+        Player currentPlayer = players.get(currentPlayerIndex);
+
+        if (currentPlayer instanceof AIPlayer) {
+            boolean aiPlayed = ((AIPlayer) currentPlayer).aiPlay(this, dictionary);  // Have the AI take its turn
+            if (aiPlayed) {
+                finalizeTurn();  // AI successfully placed a word
+                nextTurn();
+
+                return;
+            } else {
+                // AI could not place a word and passes
+                currentPlayer.decrementTurns();
+                if (currentPlayer.getSkipTurns() == 0) {
+                    currentPlayer.lostGame();  // Disqualify the player
+                }
+
+            }
+            if (gameListener != null) {
+                gameListener.onTurnEnd();  // call gui to renew
+            }
+        }
     }
 
     public boolean reroll() {
@@ -73,9 +116,9 @@ public class ScrabbleGame {
         if (player.getRerollCount() > 0 && !tileBag.isEmpty()) {
             // Return player's tiles to the bag
             //List<Tile> tiles = player.getTiles();
-           // for (Tile tile : tiles) {
+            // for (Tile tile : tiles) {
             //    tileBag.addTile(tile);
-           // }
+            // }
             player.clearTiles();
 
             // Give new tiles to the player
@@ -93,22 +136,11 @@ public class ScrabbleGame {
     }
 
     public void pass() {
-
-        nextTurn();
         getCurrentPlayer().decrementTurns();
+        nextTurn();
     }
 
-    // Helper methods
-    private void removeTilesFromPlayer(Player player, String characters) {
-        for (char c : characters.toCharArray()) {
-            Tile tileToRemove = new Tile(c);
-            player.removeTile(tileToRemove);
-        }
-        // Refill player's rack
-        while (player.remainingTiles() < 7 && !tileBag.isEmpty()) {
-            player.addTile(tileBag.removeTile());
-        }
-    }
+
 
     public int calculateWordScore(List<Position> wordPositions, boolean isFirstWord) {
         int wordScore = 0;
@@ -171,21 +203,27 @@ public class ScrabbleGame {
     /**
      * Checks if a string can be formed from the letters in another string.
      */
-    private static boolean canFormString(String rack, String word) {
-        String str1 = rack.toLowerCase();
-        String str2 = word.toLowerCase();
+    public static boolean canFormString(String rack, String boardLetters, String word) {
+        String str1 = (rack + boardLetters).toUpperCase();
+        String str2 = word.toUpperCase();
         int[] charCount = new int[26];
 
-        // Count the frequency of characters in str1
+        // Count the frequency of characters in str1 (rack + board letters)
         for (char c : str1.toCharArray()) {
-            charCount[c - 'a']++;
+            if (c >= 'A' && c <= 'Z') {
+                charCount[c - 'A']++;
+            }
         }
 
         // Decrement the frequency of characters in str2
         for (char c : str2.toCharArray()) {
-            charCount[c - 'a']--;
-            if (charCount[c - 'a'] < 0) {
-                return false;
+            if (c >= 'A' && c <= 'Z') {
+                charCount[c - 'A']--;
+                if (charCount[c - 'A'] < 0) {
+                    return false; // Not enough of this letter
+                }
+            } else {
+                return false; // Invalid character in word
             }
         }
         return true;
@@ -193,7 +231,7 @@ public class ScrabbleGame {
 
     /**
      * place the tile on the to the board
-     * */
+     */
     public void placeTile(char letter, int row, int col) {
         // Get the current player
         Player player = getCurrentPlayer();
@@ -217,15 +255,23 @@ public class ScrabbleGame {
         }
     }
 
-    public void removeTileFromBoard(char letter, int row, int col) {
+    // In ScrabbleGame.removeTileFromBoard
+    public boolean removeTileFromBoard(char letter, int row, int col) {
         Tile tile = board.getTileAt(row, col);
         if (tile != null && tile.getLetter() == letter) {
-            board.removeTile(row, col);
-            getCurrentPlayer().addTile(tile); // Add the tile back to the player's rack
-            // Remove from lastPlacedTiles if needed
-            lastPlacedTiles.removeIf(pos -> pos.row == row && pos.col == col);
+            boolean removed = board.removeTile(row, col);
+            if (removed) {
+                getCurrentPlayer().addTile(tile); // Add the tile back to the player's rack
+                lastPlacedTiles.removeIf(pos -> pos.row == row && pos.col == col);
+                System.out.println("Removed tile '" + letter + "' from board and added back to rack.");
+                return true;
+            } else {
+                System.out.println("Error: Cannot remove fixed tile from the board.");
+                return false;
+            }
         } else {
             System.out.println("Error: Tile on board does not match.");
+            return false;
         }
     }
 
@@ -241,7 +287,7 @@ public class ScrabbleGame {
     /**
      * This method analyzes the board based on the positions of the newly placed tiles and determines
      * the new word(s) formed
-     *  */
+     */
 
     public List<WordInfo> getNewWordsFormed() {
         List<WordInfo> newWords = new ArrayList<>();
@@ -250,7 +296,7 @@ public class ScrabbleGame {
             return newWords;
         }
 
-        // Identify if the placement is horizontal or vertical
+        // Determine the direction of the main word
         boolean isHorizontal = true;
         boolean isVertical = true;
 
@@ -267,35 +313,37 @@ public class ScrabbleGame {
         }
 
         if (!isHorizontal && !isVertical) {
-            // Tiles are not in a straight line
+            // Tiles are not in a straight line; invalid placement
+            System.out.println("Invalid placement: Tiles are not aligned horizontally or vertically.");
             return newWords;
         }
 
-        // Collect all words formed by the placement
-        if (isHorizontal) {
-            WordInfo mainWord = getWordAtPosition(firstRow, firstCol, true);
-            newWords.add(mainWord);
-            // Check for vertical cross words at each placed tile
-            for (Position pos : lastPlacedTiles) {
-                WordInfo crossWord = getWordAtPosition(pos.row, pos.col, false);
-                if (crossWord.word.length() > 1) {
-                    newWords.add(crossWord);
-                }
+        // Detect the main word
+        WordInfo mainWord = getWordAtPosition(firstRow, firstCol, isHorizontal);
+        if (mainWord.word.length() > 1) {
+            if(isValidWord(mainWord.word)){
+                newWords.add(mainWord);
+                System.out.println("Main word formed: " + mainWord.word);
             }
-        } else if (isVertical) {
-            WordInfo mainWord = getWordAtPosition(firstRow, firstCol, false);
-            newWords.add(mainWord);
-            // Check for horizontal cross words at each placed tile
-            for (Position pos : lastPlacedTiles) {
-                WordInfo crossWord = getWordAtPosition(pos.row, pos.col, true);
-                if (crossWord.word.length() > 1) {
+
+        }
+
+        // Detect cross words at each placed tile
+        for (Position pos : lastPlacedTiles) {
+            WordInfo crossWord = getWordAtPosition(pos.row, pos.col, !isHorizontal);
+            if (crossWord.word.length() > 1) {
+                if(isValidWord(crossWord.word)){
                     newWords.add(crossWord);
+                    System.out.println("Cross word formed at (" + pos.row + ", " + pos.col + "): " + crossWord.word);
                 }
+
             }
         }
 
         return newWords;
     }
+
+
 
     public boolean isValidWord(String word) {
         return dictionary.isEnglishWord(word.toLowerCase());
@@ -314,8 +362,12 @@ public class ScrabbleGame {
         lastPlacedTiles.clear();
         // Refill the player's rack
         refillPlayerRack(getCurrentPlayer());
-        this.nextTurn();
+
+        if (gameListener != null) {
+            gameListener.onTurnEnd();  // 或者创建一个新的回调，例如 onTurnEnd()
+        }
     }
+
 
     public boolean isFirstWord() {
         return !firstWordPlayed;
@@ -334,11 +386,12 @@ public class ScrabbleGame {
         // Game ends if tile bag is empty and any player has emptied their rack
         boolean tileBagEmpty = tileBag.isEmpty();
         boolean anyPlayerHasNoTiles = players.stream().anyMatch(player -> player.getTiles().isEmpty());
+        boolean allPlayersDisqualified = players.stream().allMatch(player -> player.getCurrentStatus() == 0);
 
         // Alternatively, game ends if all players have passed consecutively
         // You might need to implement logic to track consecutive passes
 
-        return tileBagEmpty && anyPlayerHasNoTiles;
+        return tileBagEmpty && anyPlayerHasNoTiles || allPlayersDisqualified;
     }
 
     public void endGame() {
@@ -424,6 +477,7 @@ public class ScrabbleGame {
         currentPlayerIndex = 0;
         lastPlacedTiles.clear();
         tileBag = new Bag();
+        firstWordPlayed=false;
         // Reset any other necessary game state variables
     }
 
@@ -495,4 +549,56 @@ public class ScrabbleGame {
         return visited.size() == lastPlacedTiles.size();
     }
 
+
+    public void rollbackLastPlacedTiles() {
+        for (Position pos : lastPlacedTiles) {
+            board.removeTile(pos.row, pos.col);
+        }
+        lastPlacedTiles.clear();
+        System.out.println("Rolled back last placed tiles.");
+    }
+
+   /* public boolean isMoveValid(String mainWord, List<Position> positions) {
+        // Temporarily place the tiles on the board
+        Map<Position, Tile> tempTiles = new HashMap<>();
+        Player currentPlayer = getCurrentPlayer();
+        for (int i = 0; i < positions.size(); i++) {
+            Position pos = positions.get(i);
+            Tile existingTile = board.getTileAt(pos.row, pos.col);
+            if (existingTile == null) {
+                // Get the tile from the player's rack
+                char letter = mainWord.charAt(i);
+                Tile tile = currentPlayer.getTileByLetter(letter);
+                if (tile == null) {
+                    // Player does not have the required tile
+                    return false;
+                }
+                tempTiles.put(pos, tile);
+                board.placeTile(tile, pos.row, pos.col);
+            }
+        }
+
+        // Collect all new words formed
+        List<WordInfo> newWords = getNewWordsFormed();
+
+        // Validate all new words
+        for (WordInfo wordInfo : newWords) {
+            if (!isValidWord(wordInfo.word)) {
+                // Invalid word found
+                // Remove the temporarily placed tiles
+                for (Map.Entry<Position, Tile> entry : tempTiles.entrySet()) {
+                    board.removeTile(entry.getKey().row, entry.getKey().col);
+                }
+                return false;
+            }
+        }
+
+        // Remove the temporarily placed tiles
+        for (Map.Entry<Position, Tile> entry : tempTiles.entrySet()) {
+            board.removeTile(entry.getKey().row, entry.getKey().col);
+        }
+
+        // All words are valid
+        return true;
+    }*/
 }

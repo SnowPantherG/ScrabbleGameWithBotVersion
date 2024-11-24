@@ -159,6 +159,7 @@ public class Board {
         return false;
     }
 
+
     public void fixTile(int row, int col) {
         fixedTiles[row][col] = true;
 
@@ -176,10 +177,10 @@ public class Board {
             }
         }
 
-        // Set the premium squares
-        //setPremiumSquares();
+        //Set the premium squares
+        setPremiumSquares();
     }
-/**
+
     private void setPremiumSquares() {
         // Define the positions of premium squares based on Scrabble rules
 
@@ -232,9 +233,15 @@ public class Board {
             squareTypes[pos[0]][pos[1]] = SquareType.DOUBLE_LETTER;
         }
     }
-    **/
+
 
     public SquareType getSquareType(int row, int col) {
         return squareTypes[row][col];
     }
+
+    public static int getBoardSize() {
+        return BOARD_SIZE;
+    }
 }
+
+

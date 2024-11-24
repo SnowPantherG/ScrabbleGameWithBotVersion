@@ -1,6 +1,8 @@
 import java.io.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -14,6 +16,10 @@ import java.util.Set;
  * @version v2, 21st October, 2024
  * @author Shenhao Gong
  * change 5000_common_word to 10000_common_words
+ *
+ * @version v3 22nd November,2024
+ * @author Shenhao Gong
+ * added getAllWord() for AIplayers
  *
  */
 public class WordDictionary {
@@ -64,5 +70,9 @@ public class WordDictionary {
             i++;
         }
         return null;
+    }
+
+    public List<String> getAllWords() {
+        return words.stream().collect(Collectors.toList());
     }
 }

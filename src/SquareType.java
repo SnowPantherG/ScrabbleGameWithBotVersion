@@ -1,3 +1,8 @@
 public enum SquareType {
-    NORMAL
+    NORMAL,
+    DOUBLE_WORD,
+    TRIPLE_WORD,
+    DOUBLE_LETTER,
+    TRIPLE_LETTER
+
 }

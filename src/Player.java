@@ -24,48 +24,45 @@ import java.util.*;
 public class Player {
     private String name;
     private Rack rack;
-    private int currentScore; // current score
-    private int status; //0: quit or disqualified from playing or 1: is playing
-    private int rerollCount;// reroll time
-    private int skipTurns; // turns left
-
+    private int currentScore;
+    private int status;
+    private int rerollCount;
+    private int skipTurns;
 
     /**
-     * Constructor to create a new player object with specified name
-     * Initializes the player's tiles, remaining turns, score, wins, reroll count, and turn
-     * @param name The player's name
+     * Constructor to create a new player object with specified name.
+     * Initializes the player's rack, score, status, skip turns, and reroll count.
+     *
+     * @param name The player's name.
      */
     public Player(String name) {
         this.name = name;
         this.rack = new Rack();
         this.currentScore = 0;
         this.status = 1;
-        this.skipTurns = 3; //default turns to 3
+        this.skipTurns = 3; // Default turns to 3
         this.rerollCount = 3; // Players have 3 rerolls
     }
 
     /**
      * Get the player's name.
      *
-     * @return The player's name
+     * @return The player's name.
      */
     public String getName() {
         return name;
     }
+
     /**
      * Get the player's details.
      *
-     * @return The player's description
+     * @return The player's description.
      */
     public String getDescription() {
-        String description =
-                "Name: " + getName() + " \n" +
-                        "Rack: " + getRack() + " \n" +
-                        "Score: " + currentScore + " \n" +
-                        "Status: " + status + " \n";
-
-        return description;
+        return String.format("Name: %s\nRack: %s\nScore: %d\nStatus: %d\n",
+                getName(), getRack(), currentScore, status);
     }
+
     /**
      * Returns the player's current list of tiles.
      *
@@ -76,101 +73,102 @@ public class Player {
     }
 
     /**
-     * Return the reroll count of one player
+     * Returns the reroll count of the player.
      *
-     * @return A int of reroll
-     * */
+     * @return The number of rerolls remaining.
+     */
     public int getRerollCount() {
         return rerollCount;
     }
 
     /**
-     * after the player reroll, decrease the rerool count
-     * */
+     * Decrements the player's reroll count by one.
+     */
     public void decrementRerollCount() {
         if (rerollCount > 0) {
             rerollCount--;
         }
     }
 
-
     /**
-     * Returns the player's current list of tiles as a String.
+     * Returns the player's current rack as a String.
      *
      * @return A String representing the player's tiles.
      */
     public String getRack() {
         return rack.toString();
     }
-    public String getRack_() {
-        return rack.toString_();
-    }
 
     /**
-     * Returns the player's current amount of remaining tiles as an int.
+     * Returns the number of tiles currently in the player's rack.
      *
-     * @return A int representing the player's remaining tiles.
+     * @return The number of tiles in the rack.
      */
     public int remainingTiles() {
         return rack.remainingTiles();
     }
 
     /**
-     * Adds a tile to the player's list of tiles.
+     * Adds a tile to the player's rack.
      *
      * @param tile The tile to be added.
+     * @throws IllegalStateException if the rack is full.
      */
     public void addTile(Tile tile) {
         rack.addTile(tile);
     }
 
     /**
-     * Removes a specified tile from the player's list of tiles.
+     * Removes a specified tile from the player's rack.
      *
      * @param tile The tile to be removed.
+     * @return True if the tile was successfully removed, false otherwise.
      */
-    public void removeTile(Tile tile) {
-        rack.removeTile(tile);
+    public Tile removeTile(Tile tile) {
+        return rack.removeTile(tile);
     }
 
     /**
-     * Clear current player's Tile
-     *
-     * */
+     * Clears all tiles from the player's rack.
+     */
     public void clearTiles() {
         rack.clearTiles();
     }
 
     /**
-     * Removes a specified tile from the player's list of tiles.
+     * Removes a tile at the specified index from the player's rack.
      *
-     * @param index of The tile index to be removed.
+     * @param index The index of the tile to be removed.
+     * @return The removed Tile.
+     * @throws IllegalStateException if the rack is empty.
      */
     public Tile removeTile(int index) {
         return rack.removeTile(index);
     }
 
     /**
-     * Returns how many turns left for player.
+     * Returns how many skip turns the player has left.
      *
-     * @return The number of remaining turns for skips.
+     * @return The number of skip turns remaining.
      */
     public int getSkipTurns() {
         return skipTurns;
     }
 
     /**
-     * Decrease the player's skip turns and ensure the turns
-     * do not go below zero
+     * Decrements the player's skip turns by one and updates status if necessary.
      */
     public void decrementTurns() {
         if (skipTurns > 0) {
             skipTurns--;
         }
+        if (skipTurns == 0) {
+            status = 0; // Disqualify player
+        }
     }
 
     /**
-     * Getting the player's current score.
+     * Returns the player's current score.
      *
      * @return The current score of the player.
      */
@@ -179,30 +177,35 @@ public class Player {
     }
 
     /**
-     * Increment the players current score by adding specified numbers of points
-     * @param points The points to be added
+     * Increments the player's score by the specified number of points.
+     *
+     * @param points The points to be added.
      */
     public void incrementScore(int points) {
         currentScore += points;
     }
+
     /**
-     * Decrement the players current score by subtracting specified numbers of points
-     * @param points The points to be added
+     * Decrements the player's score by the specified number of points.
+     * Ensures the score does not go negative.
+     *
+     * @param points The points to be subtracted.
      */
     public void decrementScore(int points) {
-        if ((currentScore - points)>=0){
+        if (currentScore - points >= 0) {
             currentScore -= points;
-        } //else{throw new IllegalStateException("Score can not be negative");}
+        }
     }
 
     /**
-     * Resetting player's remaining turn count to 3
+     * Resets the player's skip turns to the default value.
      */
     public void resetSkipTurns() {
         this.skipTurns = 3;
     }
+
     /**
-     * Getting the player's current status.
+     * Returns the player's current status.
      *
      * @return The current status of the player.
      */
@@ -211,14 +214,24 @@ public class Player {
     }
 
     /**
-     * Getting the player's current status.
-     *
-     * @return The current status of the player.
+     * Marks the player as having lost the game.
      */
     public void lostGame() {
         status = 0;
     }
 
-
-} ///END OF CLASS
-
+    /**
+     * Retrieves a tile from the rack by its letter.
+     *
+     * @param letter The letter of the tile to retrieve.
+     * @return The Tile object if found, null otherwise.
+     */
+    public Tile getTileByLetter(char letter) {
+        for (Tile tile : rack.getTiles()) {
+            if (tile.getLetter() == letter) {
+                return tile;
+            }
+        }
+        return null;
+    }
+}
