@@ -15,6 +15,7 @@ public class TileTest {
     private Tile tile3 = new Tile('a'); // lowercase letter
     private Tile tile4 = new Tile('&'); // not an alphabet
     private Tile newtile = new Tile('A');
+    private Tile tile5 = new Tile(' ');
 
     public static void main(String[] args) {
         return;
@@ -51,11 +52,18 @@ public class TileTest {
     }
 
     @Test
+    public void EmptyTile() {
+        assertEquals(' ', tile5.getLetter());
+        assertEquals(0, tile5.getValue());
+    }
+
+    @Test
     public void testToString() {
         assertEquals("A", tile1.toString());
         assertEquals("B", tile2.toString());
         assertEquals("A", tile3.toString());
         assertEquals("&", tile4.toString());
+        assertEquals(" ", tile5.toString());
     }
 }
 
