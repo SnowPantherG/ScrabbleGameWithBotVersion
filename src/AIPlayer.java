@@ -404,6 +404,11 @@ public class AIPlayer extends Player {
         }
     }
 
+    /**
+     * Gets all the letters that are currently placed on board
+     * @param board The current state of the board
+     * @return String containing all unique letters that are present on board
+     */
     public String getAvailableBoardLetters(Board board) {
         Set<Character> boardLetters = new HashSet<>();
         int boardSize = board.getBoardSize();
