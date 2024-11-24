@@ -421,7 +421,13 @@ public class AIPlayer extends Player {
                 .collect(Collectors.joining());
     }
 
-
+    /**
+     * Checks if there are any tiles that are adjacent to a specified position on the board
+     * @param board The current state of board
+     * @param row The row position to check
+     * @param col The column position to check
+     * @return boolean Returns true if there are adjacent tiles; false otherwise
+     */
     private boolean hasAdjacentTile(Board board, int row, int col) {
         int boardSize = board.getBoardSize();
         // Above
