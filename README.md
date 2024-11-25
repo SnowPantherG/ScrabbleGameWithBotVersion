@@ -6,6 +6,13 @@ Shenhao Gong
 Rafid Mehedi Hasan
 Note: This readme file might be the most updated on Github. Please refer to Readme file on Github.
 
+Deliverable 3: Submission on del3 branch
+
+Note: Bugs are being tracked and will be pushed with the Readme file on Github.
+
+Please refer to deliverable 2 for playing instructions below.
+For this deliverable the team equally divided the work. We made groups of 2. 1 group implemented premium squares and 1 group implemented the AI player. After each task was completed we swapped the tasks and tested each other groups features and fixed bugs while also implementing more test cases. The game compiles and runs well.
+
 Deliverable 2: Submission on del2 branch
 
 Note: Bugs are being tracked and will be pushed with the Readme file on Github. 
