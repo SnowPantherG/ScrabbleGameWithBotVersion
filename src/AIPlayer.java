@@ -1,5 +1,3 @@
-
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -9,9 +7,24 @@ import java.util.stream.Collectors;
 /**
  * The AIPlayer class represents a computer-controlled player in the Scrabble game.
  * It extends the Player class and adds the ability to make automated moves.
+ *
+ *
+ * @version v1, 23rd November 2024
+ * @author Shenhao Gong
+ *
+ * @version v2, 23rd November 2024
+ * @author Anique Ali
+ *
  */
+
 public class AIPlayer extends Player {
     WordDictionary dictionary;
+
+
+    /**
+     * Create new AI player with a name
+     * @param name The name of the AI player
+     */
     public AIPlayer(String name) {
         super(name);
         dictionary=new WordDictionary();
@@ -24,7 +37,7 @@ public class AIPlayer extends Player {
      *
      * @param game       The current state of the Scrabble game.
      * @param dictionary The dictionary to use for word validation.
-     * @return
+     * @return boolean Returns true if word was placed successfully; false otherwise and turn is passed
      */
     public boolean aiPlay(ScrabbleGame game, WordDictionary dictionary) {
         Board board = game.getBoard();
@@ -93,10 +106,6 @@ public class AIPlayer extends Player {
         return false;
     }
 
-
-
-
-
     /**
      * Attempts to place a word on the board. This implementation tries to place the word
      * connecting to existing tiles on the board to form a valid word.
@@ -104,7 +113,7 @@ public class AIPlayer extends Player {
      * @param game  The current state of the Scrabble game.
      * @param board The current state of the board.
      * @param word  The word to be placed.
-     * @return True if the word was successfully placed, false otherwise.
+     * @return Returns true if the word was successfully placed, false otherwise.
      */
     private boolean tryPlaceWord(ScrabbleGame game, Board board, String word, String rack) {
         word = word.toUpperCase(); // Ensure word is in uppercase
@@ -172,8 +181,6 @@ public class AIPlayer extends Player {
         return false;
     }
 
-
-
     /**
      * Handles score calculation and finalizing the turn after placing a word.
      *
@@ -209,13 +216,6 @@ public class AIPlayer extends Player {
 
         return true;
     }
-
-
-
-
-
-
-
 
     /**
      * Determines if a word can be placed on the board in the specified direction.
@@ -348,12 +348,12 @@ public class AIPlayer extends Player {
         return canPlaceWord(board, word, row, col, isFirstWord, rack, tilesToPlace, Direction.VERTICAL);
     }
 
-
-
-
-
-
-
+    /**
+     * Places word on the board with specified tile placements. Handles the
+     * removal of the tiles from board and has capability to restore rack back if placement fails.
+     * @param game
+     * @param tilesToPlace
+     */
     private void placeWord(ScrabbleGame game, List<TilePlacement> tilesToPlace) {
         Player currentPlayer = game.getCurrentPlayer();
         System.out.println("Player's rack before placement: " + currentPlayer.getRack());
@@ -398,18 +398,27 @@ public class AIPlayer extends Player {
 
     /**
      * Places a word horizontally on the board.
+     * @param game The current stat eof scrabble game
+     * @param tilesToPlace List of tiles to be placed
      */
     private void placeWordHorizontally(ScrabbleGame game, List<TilePlacement> tilesToPlace) {
         placeWord(game, tilesToPlace);
     }
 
     /**
-     * Places a word vertically on the board.
+     * Places a word vertically on the board
+     * @param game The current stat eof scrabble game
+     * @param tilesToPlace List of tiles to be placed
      */
     private void placeWordVertically(ScrabbleGame game, List<TilePlacement> tilesToPlace) {
         placeWord(game, tilesToPlace);
     }
 
+    /**
+     * Restores player's rack to its original state
+     * @param currentPlayer The player whose rack needs to be restored
+     * @param originalRack The original list of tiles to restore
+     */
     private void restoreOriginalRack(Player currentPlayer, List<Tile> originalRack) {
         currentPlayer.clearTiles();
         for (Tile tile : originalRack) {
@@ -417,7 +426,11 @@ public class AIPlayer extends Player {
         }
     }
 
-
+    /**
+     * Gets all the letters that are currently placed on board
+     * @param board The current state of the board
+     * @return String containing all unique letters that are present on board
+     */
     public String getAvailableBoardLetters(Board board) {
         Set<Character> boardLetters = new HashSet<>();
         int boardSize = board.getBoardSize();
@@ -435,7 +448,13 @@ public class AIPlayer extends Player {
                 .collect(Collectors.joining());
     }
 
-
+    /**
+     * Checks if there are any tiles that are adjacent to a specified position on the board
+     * @param board The current state of board
+     * @param row The row position to check
+     * @param col The column position to check
+     * @return boolean Returns true if there are adjacent tiles; false otherwise
+     */
     private boolean hasAdjacentTile(Board board, int row, int col) {
         int boardSize = board.getBoardSize();
         // Above
@@ -458,6 +477,12 @@ public class AIPlayer extends Player {
         return false;
     }
 
+
+    /**
+     * Identifies all valid anchor points on the board where new words can be placed
+     * @param board The current state of the board
+     * @return List lists of all valid positions where new words can be placed
+     */
     private List<Position> getAnchorPoints(Board board) {
         List<Position> anchorPoints = new ArrayList<>();
         int boardSize = board.getBoardSize();
@@ -481,21 +506,21 @@ public class AIPlayer extends Player {
         return anchorPoints;
     }
 
-    private Tile getTileFromRack(char letter, List<Tile> rackTiles) {
-        for (int i = 0; i < rackTiles.size(); i++) {
-            if (rackTiles.get(i).getLetter() == letter) {
-                return rackTiles.remove(i);
-            }
-        }
-        return null;
-    }
 
-
+    /**
+     * This static class represents the placement of tile on the board with it's position and letter
+     */
     private static class TilePlacement {
         char letter;
         int row;
         int col;
 
+        /**
+         * Constructs a new tile placement object.
+         * @param letter The letter to be placed
+         * @param row The position of the row
+         * @param col The position of the column
+         */
         public TilePlacement(char letter, int row, int col) {
             this.letter = letter;
             this.row = row;
@@ -503,6 +528,9 @@ public class AIPlayer extends Player {
         }
     }
 
+    /**
+     * Represents different direction to place the word on the board.
+     */
     public enum Direction {
         HORIZONTAL(0, 1),
         VERTICAL(1, 0);
@@ -510,15 +538,28 @@ public class AIPlayer extends Player {
         private final int deltaRow;
         private final int deltaCol;
 
+        /**
+         * Creates a Direction enum value using deltas for movement.
+         * @param deltaRow change in row position
+         * @param deltaCol change in column position
+         */
         Direction(int deltaRow, int deltaCol) {
             this.deltaRow = deltaRow;
             this.deltaCol = deltaCol;
         }
 
+        /**
+         * Getter to get the row movement delta for the direction
+         * @return int The change in the row position
+         */
         public int getDeltaRow() {
             return deltaRow;
         }
 
+        /**
+         * Getter to get the column movement delta for the direction
+         * @return int The change in column position
+         */
         public int getDeltaCol() {
             return deltaCol;
         }
