@@ -4,18 +4,20 @@ Muhammad Maisam
 Anique Ali
 Shenhao Gong
 Rafid Mehedi Hasan
-Note: This readme file might be the most updated on Github. Please refer to Readme file on Github.
+Note: This readme file might be the most updated on GitHub. Please refer to Readme file on GitHub.
 
 Deliverable 3: Submission on del3 branch
 
-Note: Bugs are being tracked and will be pushed with the Readme file on Github.
+Note: Bugs are being tracked and will be pushed with the Readme file on GitHub.
 
 Please refer to deliverable 2 for playing instructions below.
 For this deliverable the team equally divided the work. We made groups of 2. 1 group implemented premium squares and 1 group implemented the AI player. After each task was completed we swapped the tasks and tested each other groups features and fixed bugs while also implementing more test cases. The game compiles and runs well.
 
+The AI players are a decent implementation, but they require some more tweaking.
+
 Deliverable 2: Submission on del2 branch
 
-Note: Bugs are being tracked and will be pushed with the Readme file on Github. 
+Note: Bugs are being tracked and will be pushed with the Readme file on GitHub. 
 
 How to play the Game?
 You have to drag the tile from the Rack to the board where you want to place it. 
@@ -38,11 +40,11 @@ Refactored by Muhammad Maisam to help fit with the design of the project.
 Bag.java:
 Implemented by Anique Ali.
 Needs to be refactored and improved for next iteration.
-Different stategies to implement the class will be discussed in the next team meeting.
+Different strategies to implement the class will be discussed in the next team meeting.
 
 Tile.java:
 Implemented by Rafid Mehedi Hasan. 
 Needs to be refactored and improved for next iteration. 
-Different stategies to implement the class will be discussed in the next team meeting.
+Different strategies to implement the class will be discussed in the next team meeting.
 
 
