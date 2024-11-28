@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,12 +33,13 @@ public class WordDictionary {
 
 
     private void loadWords() {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("10000_common_words.txt")))) {
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("10000_common_words.txt"))));
             String line;
             while ((line = reader.readLine()) != null) {
                 words.add(line.trim().toLowerCase());
             }
-            System.out.println("Load English Word successful, in total " + words.size() + " words。");
+            System.out.println("Load English Word successful, in total " + words.size() + " words.");
         } catch (IOException e) {
             System.err.println("Error: " + e.getMessage());
         }
