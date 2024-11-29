@@ -42,7 +42,7 @@ public class GameController implements GameListener{
     }
 
     public void checkWord() {
-        List<WordInfo> newWords = game.getNewWordsFormed();
+        List<WordInfo> newWords = game.getNewWordsFormed(false, null);
         if(newWords.isEmpty()){
             System.out.println("no words were found");
             return;

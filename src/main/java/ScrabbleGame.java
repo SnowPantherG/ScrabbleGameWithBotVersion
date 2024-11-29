@@ -289,8 +289,11 @@ public class ScrabbleGame {
      * the new word(s) formed
      */
 
-    public List<WordInfo> getNewWordsFormed() {
+    public List<WordInfo> getNewWordsFormed(boolean isAiPlayer, List<Position> placedWordPositions) {
         List<WordInfo> newWords = new ArrayList<>();
+        if(isAiPlayer) {
+            lastPlacedTiles = placedWordPositions;
+        }
 
         if (lastPlacedTiles.isEmpty()) {
             return newWords;
@@ -537,17 +540,20 @@ public class ScrabbleGame {
                 int newCol = current.col + dir[1];
                 Position neighbor = new Position(newRow, newCol);
 
+                // Check if neighbor is either a new tile or an existing tile on the board
                 if (newRow >= 0 && newRow < 15 && newCol >= 0 && newCol < 15 &&
-                        lastPlacedTilesSet.contains(neighbor) && !visited.contains(neighbor)) {
+                        (lastPlacedTiles.contains(neighbor) || board.hasFixedTile(newRow, newCol)) &&
+                        !visited.contains(neighbor)) {
                     queue.add(neighbor);
                     visited.add(neighbor);
                 }
             }
         }
 
-        // Verify all tiles are visited
-        return visited.size() == lastPlacedTiles.size();
+        // Verify all new tiles are visited
+        return visited.containsAll(lastPlacedTiles);
     }
+
 
 
     public void rollbackLastPlacedTiles() {
