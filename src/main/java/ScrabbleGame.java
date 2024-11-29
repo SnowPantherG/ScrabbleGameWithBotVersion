@@ -321,22 +321,16 @@ public class ScrabbleGame {
         // Detect the main word
         WordInfo mainWord = getWordAtPosition(firstRow, firstCol, isHorizontal);
         if (mainWord.word.length() > 1) {
-            if(isValidWord(mainWord.word)){
-                newWords.add(mainWord);
-                System.out.println("Main word formed: " + mainWord.word);
-            }
-
+            newWords.add(mainWord);
+            System.out.println("Main word formed: " + mainWord.word);
         }
 
         // Detect cross words at each placed tile
         for (Position pos : lastPlacedTiles) {
             WordInfo crossWord = getWordAtPosition(pos.row, pos.col, !isHorizontal);
             if (crossWord.word.length() > 1) {
-                if(isValidWord(crossWord.word)){
-                    newWords.add(crossWord);
-                    System.out.println("Cross word formed at (" + pos.row + ", " + pos.col + "): " + crossWord.word);
-                }
-
+                newWords.add(crossWord);
+                System.out.println("Cross word formed at (" + pos.row + ", " + pos.col + "): " + crossWord.word);
             }
         }
 
