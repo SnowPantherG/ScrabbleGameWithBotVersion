@@ -510,21 +510,27 @@ public class ScrabbleGame {
     }
 
     private boolean areNewTilesConnected() {
-        if (lastPlacedTiles.size() <= 1) {
-            return true; // only one tile, which means is vaild
+        if (lastPlacedTiles == null || lastPlacedTiles.isEmpty()) {
+            throw new IllegalArgumentException("lastPlacedTiles cannot be null or empty");
         }
 
-        // new learnt algorithm : BFS breadth-First Search
+        if (lastPlacedTiles.size() <= 1) {
+            return true; // only one tile, which means it is valid
+        }
+
+        // Use a set for faster lookups
+        Set<Position> lastPlacedTilesSet = new HashSet<>(lastPlacedTiles);
         Set<Position> visited = new HashSet<>();
         Queue<Position> queue = new LinkedList<>();
         Position start = lastPlacedTiles.get(0);
+
         queue.add(start);
         visited.add(start);
 
         while (!queue.isEmpty()) {
             Position current = queue.poll();
 
-            // check neighbour  tiles
+            // Check neighboring tiles (up, down, left, right)
             int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
             for (int[] dir : directions) {
                 int newRow = current.row + dir[0];
@@ -532,14 +538,14 @@ public class ScrabbleGame {
                 Position neighbor = new Position(newRow, newCol);
 
                 if (newRow >= 0 && newRow < 15 && newCol >= 0 && newCol < 15 &&
-                        lastPlacedTiles.contains(neighbor) && !visited.contains(neighbor)) {
+                        lastPlacedTilesSet.contains(neighbor) && !visited.contains(neighbor)) {
                     queue.add(neighbor);
                     visited.add(neighbor);
                 }
             }
         }
 
-        // see of all the tiles are checked
+        // Verify all tiles are visited
         return visited.size() == lastPlacedTiles.size();
     }
 
