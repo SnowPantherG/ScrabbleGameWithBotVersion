@@ -36,10 +36,12 @@ public class ScrabbleGame {
     private Word lastPlacedWord;
     private List<Position> lastPlacedTiles = new ArrayList<>();
     private GameListener gameListener;
+    private final GameController gameController;
 
     private boolean firstWordPlayed = false;
 
-    public ScrabbleGame() {
+    public ScrabbleGame(GameController gameController) {
+        this.gameController = gameController;
         board = new Board();
         tileBag = new Bag();
         players = new ArrayList<>();
@@ -59,7 +61,7 @@ public class ScrabbleGame {
             players.add(new Player("Player " + (i + 1)));
         }
         for (int i = 0; i < numAIPlayers; i++) {
-            players.add(new AIPlayer("AI Player " + (i + 1)));
+            players.add(new AIPlayer(this.gameController, "AI Player " + (i + 1)));
         }
 
         // Initialize the game by dealing tiles to players
@@ -521,8 +523,6 @@ public class ScrabbleGame {
             return true; // only one tile, which means it is valid
         }
 
-        // Use a set for faster lookups
-        Set<Position> lastPlacedTilesSet = new HashSet<>(lastPlacedTiles);
         Set<Position> visited = new HashSet<>();
         Queue<Position> queue = new LinkedList<>();
         Position start = lastPlacedTiles.get(0);

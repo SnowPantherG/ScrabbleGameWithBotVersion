@@ -17,7 +17,7 @@ public class GameController implements GameListener{
     private ScrabbleGUI gui;
 
     public GameController() {
-        this.game = new ScrabbleGame();
+        this.game = new ScrabbleGame(this);
         this.gui = new ScrabbleGUI(this);
         game.setGameListener(this);
         gui.setVisible(true);

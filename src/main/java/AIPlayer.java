@@ -19,14 +19,15 @@ import java.util.stream.Collectors;
 
 public class AIPlayer extends Player {
     WordDictionary dictionary;
-
+    private final GameController gameController;
 
     /**
      * Create new AI player with a name
      * @param name The name of the AI player
      */
-    public AIPlayer(String name) {
+    public AIPlayer(GameController gameController, String name) {
         super(name);
+        this.gameController = gameController;
         dictionary=new WordDictionary();
     }
 
@@ -73,10 +74,10 @@ public class AIPlayer extends Player {
         // Try to place each word
         for (String word : possibleWords) {
             System.out.println("AI is considering word: " + word);
-            boolean placed = tryPlaceWord(game, board, word, rack);
-            if (placed) {
+            List<Position> placedWord = tryPlaceWord(game, board, word, rack);
+            if (placedWord != null) {
                 // 成功放置主单词，接下来验证所有生成的新单词（主单词和交叉单词）
-                List<WordInfo> newWords = game.getNewWordsFormed();
+                List<WordInfo> newWords = game.getNewWordsFormed(true, placedWord);
                 boolean allValid = true;
 
                 // 检查所有新形成的单词是否都在词典中
@@ -103,6 +104,8 @@ public class AIPlayer extends Player {
 
         // If no word could be placed, pass the turn
         System.out.println(getName() + " could not place a word and passes.");
+        gameController.passTurn();
+
         return false;
     }
 
@@ -115,9 +118,10 @@ public class AIPlayer extends Player {
      * @param word  The word to be placed.
      * @return Returns true if the word was successfully placed, false otherwise.
      */
-    private boolean tryPlaceWord(ScrabbleGame game, Board board, String word, String rack) {
+    private List<Position> tryPlaceWord(ScrabbleGame game, Board board, String word, String rack) {
         word = word.toUpperCase(); // Ensure word is in uppercase
         int boardSize = Board.getBoardSize();
+
         // First, try to place the word by aligning with existing letters on the board
         for (int row = 0; row < boardSize; row++) {
             for (int col = 0; col < boardSize; col++) {
@@ -133,7 +137,7 @@ public class AIPlayer extends Player {
                                 List<TilePlacement> tilesToPlace = new ArrayList<>();
                                 if (canPlaceWordHorizontally(board, word, row, startCol, game.isFirstWord(), rack, tilesToPlace) && dictionary.isEnglishWord(word)) {
                                     placeWordHorizontally(game, tilesToPlace);
-                                    return handleScoreAndFinalize(game);
+                                    return extractPositionsFromTilePlacements(tilesToPlace);
                                 }
                             }
                             // Try to place the word vertically
@@ -142,7 +146,7 @@ public class AIPlayer extends Player {
                                 List<TilePlacement> tilesToPlace = new ArrayList<>();
                                 if (canPlaceWordVertically(board, word, startRow, col, game.isFirstWord(), rack, tilesToPlace) && dictionary.isEnglishWord(word)) {
                                     placeWordVertically(game, tilesToPlace);
-                                    return handleScoreAndFinalize(game);
+                                    return extractPositionsFromTilePlacements(tilesToPlace);
                                 }
                             }
                         }
@@ -168,17 +172,25 @@ public class AIPlayer extends Player {
             List<TilePlacement> tilesToPlace = new ArrayList<>();
             if (canPlaceWordHorizontally(board, word, row, col, game.isFirstWord(), rack, tilesToPlace)) {
                 placeWordHorizontally(game, tilesToPlace);
-                return handleScoreAndFinalize(game);
+                return extractPositionsFromTilePlacements(tilesToPlace);
             }
 
             // Try placing the word vertically
             tilesToPlace.clear();
             if (canPlaceWordVertically(board, word, row, col, game.isFirstWord(), rack, tilesToPlace)) {
                 placeWordVertically(game, tilesToPlace);
-                return handleScoreAndFinalize(game);
+                return extractPositionsFromTilePlacements(tilesToPlace);
             }
         }
-        return false;
+        return null; // Return null if no placement was found
+    }
+
+    private List<Position> extractPositionsFromTilePlacements(List<TilePlacement> tilesToPlace) {
+        List<Position> positions = new ArrayList<>();
+        for (TilePlacement placement : tilesToPlace) {
+            positions.add(placement.getPosition());
+        }
+        return positions;
     }
 
     /**
@@ -189,7 +201,7 @@ public class AIPlayer extends Player {
      */
     private boolean handleScoreAndFinalize(ScrabbleGame game) {
         // After placing the word, calculate the score
-        List<WordInfo> newWords = game.getNewWordsFormed();
+        List<WordInfo> newWords = game.getNewWordsFormed(false, null);
         int totalScore = 0;
         for (WordInfo wordInfo : newWords) {
             if(dictionary.isEnglishWord(wordInfo.word)){
@@ -379,6 +391,8 @@ public class AIPlayer extends Player {
                     }
                     // Restore the original rack
                     restoreOriginalRack(currentPlayer, originalRack);
+                    // FIXME: Pass the turn for now, should not decide here
+                    gameController.passTurn();
                     return;
                 }
             } else {
@@ -389,6 +403,8 @@ public class AIPlayer extends Player {
                 }
                 // Restore the original rack
                 restoreOriginalRack(currentPlayer, originalRack);
+                // FIXME: Pass the turn for now, should not decide here
+                gameController.passTurn();
                 return;
             }
         }
@@ -525,6 +541,14 @@ public class AIPlayer extends Player {
             this.letter = letter;
             this.row = row;
             this.col = col;
+        }
+
+        /**
+         * Gets the position of the tile as a Position object.
+         * @return A Position object representing the row and column.
+         */
+        public Position getPosition() {
+            return new Position(row, col);
         }
     }
 

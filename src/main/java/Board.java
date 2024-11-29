@@ -34,6 +34,9 @@ public class Board {
         return board[row][col].getLetter();
     }
 
+    public boolean hasFixedTile(int row, int col) {
+        return fixedTiles[row][col];
+    }
     public String characters(String word, int row, int col, String direction) {
         StringBuilder sb = new StringBuilder();
         List<Tile> tiles = new ArrayList<>();
