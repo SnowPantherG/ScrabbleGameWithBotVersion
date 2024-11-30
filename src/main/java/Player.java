@@ -96,7 +96,7 @@ public class Player {
      * @return A String representing the player's tiles.
      */
     public String getRack() {
-        return rack.toString();
+        return this.rack.toString();
     }
 
     /**

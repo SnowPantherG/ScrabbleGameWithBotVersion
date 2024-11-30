@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -370,10 +367,14 @@ public class AIPlayer extends Player {
         Player currentPlayer = game.getCurrentPlayer();
         System.out.println("Player's rack before placement: " + currentPlayer.getRack());
 
-        // Backup original rack in case of failure
-        List<Tile> originalRack = new ArrayList<>(currentPlayer.getTiles());
         // Record placed tiles to facilitate rollback if needed
         List<TilePlacement> placedTiles = new ArrayList<>();
+
+        System.out.println("Tiles to place: " + tilesToPlace.size());
+        for (TilePlacement tp: tilesToPlace) {
+            System.out.print(tp.letter + " ");
+        }
+        System.out.println();
 
         for (TilePlacement tp : tilesToPlace) {
             Tile tileToPlace = currentPlayer.getTileByLetter(tp.letter);
@@ -390,21 +391,21 @@ public class AIPlayer extends Player {
                         game.removeTileFromBoard(placed.letter, placed.row, placed.col); // Correct method name
                     }
                     // Restore the original rack
-                    restoreOriginalRack(currentPlayer, originalRack);
+                    restoreOriginalRack(currentPlayer, placedTiles);
                     // FIXME: Pass the turn for now, should not decide here
                     gameController.passTurn();
                     return;
                 }
             } else {
-                System.out.println("Error: Tile '" + tp.letter + "' not found in player's rack during placement.");
+                System.out.println("Error: Tile '" + tp.letter + "' not found in player's rack" + currentPlayer.getRack() + " during placement.");
                 // Rollback any tiles that have already been placed
                 for (TilePlacement placed : placedTiles) {
                     game.removeTileFromBoard(placed.letter, placed.row, placed.col); // Correct method name
                 }
                 // Restore the original rack
-                restoreOriginalRack(currentPlayer, originalRack);
+                restoreOriginalRack(currentPlayer, placedTiles);
                 // FIXME: Pass the turn for now, should not decide here
-                gameController.passTurn();
+//                gameController.passTurn();
                 return;
             }
         }
@@ -433,13 +434,15 @@ public class AIPlayer extends Player {
     /**
      * Restores player's rack to its original state
      * @param currentPlayer The player whose rack needs to be restored
-     * @param originalRack The original list of tiles to restore
+     * @param placedTiles The placed list of tiles to restore
      */
-    private void restoreOriginalRack(Player currentPlayer, List<Tile> originalRack) {
-        currentPlayer.clearTiles();
-        for (Tile tile : originalRack) {
-            currentPlayer.addTile(tile);
+    private void restoreOriginalRack(Player currentPlayer, List<TilePlacement> placedTiles) {
+
+        System.out.println("Player's placed tiles are : " + placedTiles.size());
+        for (TilePlacement tile : placedTiles) {
+            currentPlayer.addTile(new Tile(tile.letter));
         }
+        System.out.println("Player restored original rack: " + currentPlayer.getRack());
     }
 
     /**

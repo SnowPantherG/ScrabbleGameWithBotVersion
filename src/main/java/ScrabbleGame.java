@@ -558,6 +558,7 @@ public class ScrabbleGame {
 
     public void rollbackLastPlacedTiles() {
         for (Position pos : lastPlacedTiles) {
+            getCurrentPlayer().addTile(board.getTileAt(pos.row,pos.col));
             board.removeTile(pos.row, pos.col);
         }
         lastPlacedTiles.clear();
