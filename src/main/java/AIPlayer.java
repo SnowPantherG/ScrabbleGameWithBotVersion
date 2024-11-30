@@ -87,6 +87,7 @@ public class AIPlayer extends Player {
                 }
 
                 if (allValid) {
+                    handleScore(this.gameController.getGame(), placedWord);
                     // 所有单词合法，结束回合
                     game.finalizeTurn();
                     System.out.println(getName() + " placed the word: " + word);
@@ -194,36 +195,18 @@ public class AIPlayer extends Player {
      * Handles score calculation and finalizing the turn after placing a word.
      *
      * @param game The current state of the Scrabble game.
-     * @return True if scoring and finalizing are successful, false otherwise.
      */
-    private boolean handleScoreAndFinalize(ScrabbleGame game) {
+    private void handleScore(ScrabbleGame game, List<Position> placedWord) {
         // After placing the word, calculate the score
-        List<WordInfo> newWords = game.getNewWordsFormed(false, null);
+        List<WordInfo> newWords = game.getNewWordsFormed(true, placedWord);
         int totalScore = 0;
         for (WordInfo wordInfo : newWords) {
-            if(dictionary.isEnglishWord(wordInfo.word)){
                 int wordScore = game.calculateWordScore(wordInfo.positions, game.isFirstWord());
-
-
                 System.out.println("Word '" + wordInfo.word + "' is valid. Score: " + wordScore);
                 totalScore += wordScore;
                 this.incrementScore(totalScore);
                 System.out.println(getName() + "'s new score: " + getCurrentScore());
-                break;
-            }
-            else{
-                System.out.println("AI cannot find a word pass turn");
-                break;
-            }
         }
-
-        // Increment AI player's score
-
-
-        // Finalize the turn
-        game.finalizeTurn();
-
-        return true;
     }
 
     /**
