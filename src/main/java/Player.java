@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -21,7 +22,7 @@ import java.util.*;
  * @author Muhammad Maisam
  */
 
-public class Player {
+public class Player implements Serializable {
     private String name;
     private Rack rack;
     private int currentScore;
@@ -233,5 +234,13 @@ public class Player {
             }
         }
         return null;
+    }
+
+    public void setCurrentScore(int score) {
+        currentScore = score;
+    }
+
+    public void setTiles(List<Tile> tiles) {
+        rack.setTiles(tiles);
     }
 }

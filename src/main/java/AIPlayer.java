@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -14,9 +15,9 @@ import java.util.stream.Collectors;
  *
  */
 
-public class AIPlayer extends Player {
+public class AIPlayer extends Player implements Serializable {
     WordDictionary dictionary;
-    private final GameController gameController;
+    private transient GameController gameController;
 
     /**
      * Create new AI player with a name
@@ -506,6 +507,23 @@ public class AIPlayer extends Player {
         }
 
         return anchorPoints;
+    }
+
+    /**
+     * Re-initialize transient fields after deserialization.
+     */
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+        in.defaultReadObject(); // Deserialize non-transient fields
+        this.dictionary = new WordDictionary(); // Re-initialize the dictionary
+        // gameController will need to be injected by the caller after deserialization
+    }
+
+    /**
+     * Injects the GameController after deserialization.
+     * @param gameController The game controller to assign to this AIPlayer.
+     */
+    public void setGameController(GameController gameController) {
+        this.gameController = gameController;
     }
 
 

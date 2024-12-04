@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.HashMap;
 
 /**
@@ -15,7 +16,7 @@ import java.util.HashMap;
  * @author Muhammad Maisam
  * @version V1.2 22nd October 2024
  */
-public class Tile {
+public class Tile implements Serializable {
     private char letter;  // The letter on the tile ('A', 'B', ....., 'Z')
     private int value;    // The integer value of the tile
 

@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.List;
 /**
  * The word class represents a word.
@@ -9,7 +10,7 @@ import java.util.List;
  * @version 2024.10.22
  */
 
-public class Word {
+public class Word implements Serializable {
     private List<Tile> tiles;
     private String direction; // "horizontal" or "vertical"
     private int startX; //row

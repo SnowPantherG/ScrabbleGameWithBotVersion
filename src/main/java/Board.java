@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.io.Serializable;
 
 /**
  * Board class will act as a board in the scrabble game.
@@ -8,13 +9,17 @@ import java.util.List;
  * @version 2024.10.22
  *
  *
- * @author Shnehao Gong
+ * @author Shenhao Gong
  * @version 2024.11.09
  * added method getTilesAt()
  * add situation that tiles should be fixed after player get the score
+ *
+ * @author Shenhao Gong
+ * @version 2024-12-03
+ * implement Serializable for saving the gameStates
  */
 
-public class Board {
+public class Board implements Serializable {
     private static final int BOARD_SIZE = 15;
     private final Tile[][] board;
     private List<Word> placedWords;
@@ -244,6 +249,75 @@ public class Board {
 
     public static int getBoardSize() {
         return BOARD_SIZE;
+    }
+
+    // Get a deep copy of the board state
+    public BoardState getState() {
+        return new BoardState(
+                deepCopyTiles(),
+                deepCopyFixedTiles(),
+                deepCopySquareTypes(),
+                new ArrayList<>(placedWords) // Deep copy placed words
+        );
+    }
+
+    // Restore the board state from a BoardState object
+    public void restoreState(BoardState state) {
+        restoreTiles(state.getTiles());
+        restoreFixedTiles(state.getFixedTiles());
+        restoreSquareTypes(state.getSquareTypes());
+        placedWords.clear();
+        placedWords.addAll(state.getPlacedWords());
+    }
+
+    private Tile[][] deepCopyTiles() {
+        Tile[][] copy = new Tile[BOARD_SIZE][BOARD_SIZE];
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                if (board[i][j] != null) {
+                    // Create a new Tile using only the letter
+                    copy[i][j] = new Tile(board[i][j].getLetter());
+                }
+            }
+        }
+        return copy;
+    }
+
+    private boolean[][] deepCopyFixedTiles() {
+        boolean[][] copy = new boolean[BOARD_SIZE][BOARD_SIZE];
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            System.arraycopy(fixedTiles[i], 0, copy[i], 0, BOARD_SIZE);
+        }
+        return copy;
+    }
+
+    private SquareType[][] deepCopySquareTypes() {
+        SquareType[][] copy = new SquareType[BOARD_SIZE][BOARD_SIZE];
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            System.arraycopy(squareTypes[i], 0, copy[i], 0, BOARD_SIZE);
+        }
+        return copy;
+    }
+
+    private void restoreTiles(Tile[][] tiles) {
+        if (tiles.length != BOARD_SIZE || tiles[0].length != BOARD_SIZE) {
+            throw new IllegalArgumentException("Invalid board size during state restoration");
+        }
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            System.arraycopy(tiles[i], 0, board[i], 0, BOARD_SIZE);
+        }
+    }
+
+    private void restoreFixedTiles(boolean[][] fixedTiles) {
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            System.arraycopy(fixedTiles[i], 0, this.fixedTiles[i], 0, BOARD_SIZE);
+        }
+    }
+
+    private void restoreSquareTypes(SquareType[][] squareTypes) {
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            System.arraycopy(squareTypes[i], 0, this.squareTypes[i], 0, BOARD_SIZE);
+        }
     }
 }
 

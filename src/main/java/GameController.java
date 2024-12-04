@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.io.*;
 import java.util.List;
 
 /**
@@ -12,7 +13,7 @@ import java.util.List;
  * @version 2024.11.09
  * updated version for implement GUI
  */
-public class GameController implements GameListener{
+public class GameController implements GameListener,Serializable{
     private ScrabbleGame game;
     private ScrabbleGUI gui;
 
@@ -39,6 +40,8 @@ public class GameController implements GameListener{
         gui.updateRack(game.getCurrentPlayer().getTiles());
         gui.updateScoreboard(game.getPlayers());
         gui.showMessage("Game started with " + numHumanPlayers + " human players and " + numAIPlayers + " AI players.");
+        gui.enableSaveLoad();
+        //game.getGameStateStack().push(new GameState(game.getBoard(), game.getPlayers(), game.getCurrentPlayerIndex()));
     }
 
     public void checkWord() {
@@ -92,8 +95,6 @@ public class GameController implements GameListener{
         } else {
             // Handle invalid word scenario
             gui.showMessage("Your move was invalid. Please adjust your tiles.");
-            // Optionally, remove the placed tiles and return them to the player's rack
-            // game.resetLastMove();
             gui.updateBoard(game.getBoard());
             gui.updateRack(game.getCurrentPlayer().getTiles());
         }
@@ -209,5 +210,52 @@ public class GameController implements GameListener{
         gui.updateScoreboard(game.getPlayers());
         gui.showCurrentPlayer(game.getCurrentPlayer().getName(), game.getCurrentPlayer().getSkipTurns());
     }
+
+    public void saveGame() {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("game_state.dat"))) {
+            GameState gameState = new GameState(
+                    game.getBoard(),                // Current board
+                    game.getPlayers(),              // Players
+                    game.getCurrentPlayerIndex(),   // Current player index
+                    game.isFirstWord(),             // Whether the first word was played
+                    game.getLastPlacedTilePositions() // Last placed tiles
+            );
+            out.writeObject(gameState);
+            gui.showMessage("Game saved successfully!");
+        } catch (IOException e) {
+            gui.showMessage("Error saving game: " + e.getMessage());
+        }
+    }
+
+
+
+
+    public void loadGame() {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("game_state.dat"))) {
+            GameState loadedGameState = (GameState) in.readObject();
+            game.restoreGameState(loadedGameState); // Delegate restoration to ScrabbleGame
+            gui.updateBoard(game.getBoard());
+            gui.updateRack(game.getCurrentPlayer().getTiles());
+            gui.updateScoreboard(game.getPlayers());
+            gui.showCurrentPlayer(game.getCurrentPlayer().getName(), game.getCurrentPlayer().getSkipTurns());
+            gui.showMessage("Game loaded successfully!");
+        } catch (IOException | ClassNotFoundException e) {
+            gui.showMessage("Error loading game: " + e.getMessage());
+        }
+    }
+
+    public void undoLastMove() {
+        try {
+            game.undoLastMove();
+            gui.updateBoard(game.getBoard());
+            gui.updateRack(game.getCurrentPlayer().getTiles());
+            gui.updateScoreboard(game.getPlayers());
+            gui.showCurrentPlayer(game.getCurrentPlayer().getName(), game.getCurrentPlayer().getSkipTurns());
+            gui.showMessage("Last move undone.");
+        } catch (Exception e) {
+            gui.showMessage("Cannot undo: " + e.getMessage());
+        }
+    }
+
 
 }

@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  * added getAllWord() for AIplayers
  *
  */
-public class WordDictionary {
+public class WordDictionary implements Serializable{
     private Set<String> words;
 
     public WordDictionary() {

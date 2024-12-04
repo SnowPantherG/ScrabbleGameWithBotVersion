@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -19,7 +20,7 @@ import java.util.List;
  *
  */
 
-public class Rack {
+public class Rack implements Serializable {
     private List<Tile> tiles;
 
     public Rack() {
@@ -79,6 +80,11 @@ public class Rack {
 
     public void clearTiles(){
         tiles.clear();
+    }
+
+    public void setTiles(List<Tile> tiles) {
+        this.tiles.clear();
+        this.tiles.addAll(tiles);
     }
 
 

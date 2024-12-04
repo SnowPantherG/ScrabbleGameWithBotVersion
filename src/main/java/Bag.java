@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -16,7 +17,7 @@ import java.util.*;
  *
  */
 
-public class Bag {
+public class Bag implements Serializable {
     // Constant array representing the tile distribution, distribution represents the number of alphabets/tiles that are present in real game.
     private static final char[] SCRABBLE_TILE_DISTRIBUTION = {
             'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A',  // 9 A's

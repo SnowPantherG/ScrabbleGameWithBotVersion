@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -27,7 +28,7 @@ import java.util.*;
  * @author Muhammad Maisam
  * @version v2.1 12 November 2024
  */
-public class ScrabbleGame {
+public class ScrabbleGame implements Serializable {
     private Board board;
     private Bag tileBag;
     private final List<Player> players;
@@ -37,6 +38,7 @@ public class ScrabbleGame {
     private List<Position> lastPlacedTiles = new ArrayList<>();
     private GameListener gameListener;
     private final GameController gameController;
+    private Stack<GameState> gameStateStack = new Stack<>();
 
     private boolean firstWordPlayed = false;
 
@@ -70,6 +72,9 @@ public class ScrabbleGame {
                 player.addTile(tileBag.removeTile());
             }
         }
+        firstWordPlayed = false;
+        gameStateStack.push(new GameState(board, players, currentPlayerIndex, firstWordPlayed, lastPlacedTiles));
+
     }
 
     public void nextTurn() {
@@ -115,21 +120,23 @@ public class ScrabbleGame {
 
     public boolean reroll() {
         Player player = players.get(currentPlayerIndex);
+
         if (player.getRerollCount() > 0 && !tileBag.isEmpty()) {
-            // Return player's tiles to the bag
-            //List<Tile> tiles = player.getTiles();
-            // for (Tile tile : tiles) {
-            //    tileBag.addTile(tile);
-            // }
+            // Push the current game state to the stack before modifying
+            gameStateStack.push(new GameState(board, players, currentPlayerIndex, firstWordPlayed, lastPlacedTiles));
+
+
+            // Clear the player's current tiles
             player.clearTiles();
 
-            // Give new tiles to the player
+            // Refill the player's rack with new tiles
             for (int i = 0; i < 7; i++) {
                 if (!tileBag.isEmpty()) {
                     player.addTile(tileBag.removeTile());
                 }
-
             }
+
+            // Decrement the player's reroll count
             player.decrementRerollCount();
             return true;
         } else {
@@ -137,10 +144,19 @@ public class ScrabbleGame {
         }
     }
 
+
     public void pass() {
+        // Save the current game state before making changes
+        gameStateStack.push(new GameState(board, players, currentPlayerIndex, firstWordPlayed, lastPlacedTiles));
+
+
+        // Decrement the current player's remaining turns
         getCurrentPlayer().decrementTurns();
+
+        // Move to the next player's turn
         nextTurn();
     }
+
 
 
 
@@ -365,6 +381,9 @@ public class ScrabbleGame {
         if (gameListener != null) {
             gameListener.onTurnEnd();  // 或者创建一个新的回调，例如 onTurnEnd()
         }
+
+        gameStateStack.push(new GameState(board, players, currentPlayerIndex, firstWordPlayed, lastPlacedTiles));
+
     }
 
 
@@ -565,7 +584,49 @@ public class ScrabbleGame {
         System.out.println("Rolled back last placed tiles.");
     }
 
-   /* public boolean isMoveValid(String mainWord, List<Position> positions) {
+    public void saveState() {
+        gameStateStack.push(new GameState(board, players, currentPlayerIndex, firstWordPlayed, lastPlacedTiles));
+
+    }
+
+    public void undoLastMove() {
+        if (!gameStateStack.isEmpty()) {
+            GameState previousState = gameStateStack.pop();
+            restoreGameState(previousState);
+        } else {
+            throw new IllegalStateException("No moves to undo");
+        }
+    }
+
+    public void restoreGameState(GameState gameState) {
+        // Restore the board state
+        board.restoreState(gameState.restoreBoard());
+
+        // Clear and restore players, passing the GameController for AIPlayer reconstruction
+        players.clear();
+        players.addAll(gameState.restorePlayers(gameController)); // Ensure AIPlayers are reconstructed properly
+
+        // Restore the current player's turn index
+        currentPlayerIndex = gameState.getCurrentPlayerIndex();
+
+        // Restore the first word played flag
+        firstWordPlayed = gameState.isFirstWordPlayed();
+
+        // Restore last placed tiles for connectivity checks
+        lastPlacedTiles.clear();
+        lastPlacedTiles.addAll(gameState.getLastPlacedTiles());
+    }
+
+
+    public int getCurrentPlayerIndex() {
+        return currentPlayerIndex;
+    }
+
+    public Stack<GameState> getGameStateStack() {
+        return gameStateStack;
+    }
+
+    /* public boolean isMoveValid(String mainWord, List<Position> positions) {
         // Temporarily place the tiles on the board
         Map<Position, Tile> tempTiles = new HashMap<>();
         Player currentPlayer = getCurrentPlayer();

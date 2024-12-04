@@ -17,9 +17,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.event.*;
+import java.io.Serializable;
 import java.util.List;
 
-public class ScrabbleGUI extends JFrame {
+public class ScrabbleGUI extends JFrame implements Serializable {
     private GameController controller;
     private JPanel startPanel;
     private JPanel gamePanel;
@@ -39,8 +40,11 @@ public class ScrabbleGUI extends JFrame {
     private JButton checkButton;
     private JButton passButton;
     private JButton rerollButton;
+    private JButton undoButton;
 
     private JMenuItem endGameMenuItem;
+    JMenuItem saveMenuItem;
+    JMenuItem loadMenuItem;
 
     private final Font tileFont=new Font("Arial Unicode MS",Font.BOLD,20);
 
@@ -197,16 +201,25 @@ public class ScrabbleGUI extends JFrame {
         JMenuItem restartMenuItem = new JMenuItem("Restart");
         endGameMenuItem = new JMenuItem("End Game");
         JMenuItem quitMenuItem = new JMenuItem("Quit");
+        saveMenuItem = new JMenuItem("Save");
+        loadMenuItem = new JMenuItem("Load");
 
         restartMenuItem.addActionListener(e -> controller.restartGame());
         endGameMenuItem.addActionListener(e -> controller.endGame());
         endGameMenuItem.setEnabled(false);   //while no game is playing, initially set disabled
         quitMenuItem.addActionListener(e -> System.exit(0));
+        saveMenuItem.addActionListener(e -> controller.saveGame());
+        loadMenuItem.addActionListener(e -> controller.loadGame());
 
         gameMenu.add(restartMenuItem);
         gameMenu.add(endGameMenuItem);
         gameMenu.addSeparator();
         gameMenu.add(quitMenuItem);
+        gameMenu.add(saveMenuItem);
+        gameMenu.add(loadMenuItem);
+
+        saveMenuItem.setEnabled(false); //intially disabled
+        loadMenuItem.setEnabled(false);
 
         // Help menu
         JMenu helpMenu = new JMenu("Help");
@@ -344,21 +357,26 @@ public class ScrabbleGUI extends JFrame {
         checkButton = new JButton("Check");
         passButton = new JButton("Pass");
         rerollButton = new JButton("Reroll");
+        undoButton = new JButton("Undo");
 
         Dimension buttonSize = new Dimension(100, 40);
         checkButton.setMaximumSize(buttonSize);
         passButton.setMaximumSize(buttonSize);
         rerollButton.setMaximumSize(buttonSize);
+        undoButton.setMaximumSize(buttonSize);
 
         checkButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         passButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         rerollButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        undoButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         buttonsPanel.add(checkButton);
         buttonsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         buttonsPanel.add(passButton);
         buttonsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         buttonsPanel.add(rerollButton);
+        buttonsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        buttonsPanel.add(undoButton);
 
         // **Rack and Buttons Panel**
         JPanel rackAndButtonsPanel = new JPanel(new BorderLayout());
@@ -371,6 +389,8 @@ public class ScrabbleGUI extends JFrame {
         checkButton.addActionListener(e -> handleCheckWord());
         passButton.addActionListener(e -> controller.passTurn());
         rerollButton.addActionListener(e -> controller.rerollTiles());
+        undoButton.addActionListener(e -> controller.undoLastMove());
+
 
         getContentPane().add(gamePanel);
 
@@ -648,6 +668,7 @@ public class ScrabbleGUI extends JFrame {
         checkButton.setEnabled(false);
         passButton.setEnabled(false);
         rerollButton.setEnabled(false);
+        undoButton.setEnabled(false);
         // Optionally, disable drag-and-drop
         for (JLabel rackLabel : rackLabels) {
             rackLabel.setTransferHandler(null);
@@ -670,4 +691,11 @@ public class ScrabbleGUI extends JFrame {
     public JMenuItem getEndGameMenuItem() {
         return endGameMenuItem;
     }
+
+
+    public void enableSaveLoad(){
+        saveMenuItem.setEnabled(true); //intially disabled
+        loadMenuItem.setEnabled(true);
+    }
+
 }
