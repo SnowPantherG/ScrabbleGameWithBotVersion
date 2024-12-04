@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.io.*;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -16,6 +17,10 @@ import java.util.List;
  * @author Shenhao Gong
  * @version 2024-12-04
  * added save load game function, added situation if BoardStream passed in
+ *
+ * @author Shenhao Gong
+ * @version 2024-12-04(2)
+ * added determineWinner() to find the winner in all players
  */
 public class GameController implements GameListener,Serializable{
     private ScrabbleGame game;
@@ -187,9 +192,9 @@ public class GameController implements GameListener,Serializable{
 
     public void onGameEnd() {
         gui.showMessage("Game Over!");
-        gui.displayFinalScores(game.getPlayers());
-        gui.disableGameActions();
-
+        Player winner = determineWinner();
+        String winnerMessage = "Congratulations " + winner.getName() + "! You Win!";
+        gui.showVictoryScreen(winnerMessage);
     }
 
     public void onTurnEnd(){
@@ -267,6 +272,12 @@ public class GameController implements GameListener,Serializable{
         } catch (Exception e) {
             gui.showMessage("Cannot undo: " + e.getMessage());
         }
+    }
+
+    public Player determineWinner() {
+        return game.getPlayers().stream()
+                .max(Comparator.comparingInt(Player::getCurrentScore))
+                .orElseThrow(() -> new IllegalStateException("No players found"));
     }
 
 

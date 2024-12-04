@@ -14,6 +14,10 @@
  * @author Shenhao Gong
  * @version 2024-12-04
  * added save/load in memubar, added undo button, added choose board on startPanel
+ *
+ * @author Shenhao Gong
+ * @version 2024-12-05
+ * added method to show victory screen
  */
 
 
@@ -743,6 +747,14 @@ public class ScrabbleGUI extends JFrame implements Serializable {
     public void enableSaveLoad(){
         saveMenuItem.setEnabled(true); //intially disabled
         loadMenuItem.setEnabled(true);
+    }
+
+    public void showVictoryScreen(String winnerMessage) {
+        getContentPane().removeAll(); // Remove all existing components
+        VictoryPanel victoryPanel = new VictoryPanel(winnerMessage);
+        add(victoryPanel);
+        revalidate();
+        repaint();
     }
 
 }
