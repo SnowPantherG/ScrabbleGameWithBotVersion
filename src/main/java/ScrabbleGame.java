@@ -200,6 +200,31 @@ public class ScrabbleGame implements Serializable {
 
             int letterMultiplier = 1;
 
+            switch (squareType) {
+                case DOUBLE_LETTER:
+                    if (isNewTile) {
+                        letterMultiplier = 2; // Double the letter score
+                    }
+                    break;
+                case TRIPLE_LETTER:
+                    if (isNewTile) {
+                        letterMultiplier = 3; // Triple the letter score
+                    }
+                    break;
+                case DOUBLE_WORD:
+                    if (isNewTile) {
+                        wordMultiplier *= 2; // Double the word score
+                    }
+                    break;
+                case TRIPLE_WORD:
+                    if (isNewTile) {
+                        wordMultiplier *= 3; // Triple the word score
+                    }
+                    break;
+                default:
+                    break; // Normal square, no multiplier
+            }
+
             System.out.println("Position: (" + row + ", " + col + "), Letter: " + tile.getLetter() +
                     ", Value: " + tileValue + ", SquareType: " + squareType + ", isNewTile: " + isNewTile);
 
