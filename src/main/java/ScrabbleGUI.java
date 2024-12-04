@@ -10,6 +10,10 @@
  *
  * @author Anique Ali
  * @version 2024.11.10
+ *
+ * @author Shenhao Gong
+ * @version 2024-12-04
+ * added save/load in memubar, added undo button, added choose board on startPanel
  */
 
 
@@ -17,6 +21,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.event.*;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 
@@ -30,6 +35,7 @@ public class ScrabbleGUI extends JFrame implements Serializable {
     private JLabel[] rackLabels;
     private JComboBox<String> playerComboBox;
     private JComboBox<String> aiPlayerComboBox;
+    JComboBox<String> boardComboBox;
 
     // Declare buttons for the start panel
     private JButton playButton;
@@ -47,6 +53,7 @@ public class ScrabbleGUI extends JFrame implements Serializable {
     JMenuItem loadMenuItem;
 
     private final Font tileFont=new Font("Arial Unicode MS",Font.BOLD,20);
+    InputStream inputStream;
 
     /**
      * Create a new Scrabble game with specific controller, initializes the UI and
@@ -132,9 +139,25 @@ public class ScrabbleGUI extends JFrame implements Serializable {
 
         centerPanel.add(aiPlayerSelectionPanel);
 
+        // Choose Board Panel
+        JPanel boardSelectionPanel = new JPanel();
+        JLabel boardLabel = new JLabel("Choose Board:");
+        boardLabel.setFont(new Font("Arial", Font.PLAIN, 24)); // Increased font size
+        boardSelectionPanel.add(boardLabel);
+
+        String[] boardOptions = { "Default", "Board 1", "Board 2", "Board 3", "Board 4", "Board 5" };
+        boardComboBox = new JComboBox<>(boardOptions);
+        boardComboBox.setFont(new Font("Arial", Font.PLAIN, 24)); // Increased font size
+        boardSelectionPanel.add(boardComboBox);
+
+        centerPanel.add(boardSelectionPanel);
+        
+        
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.Y_AXIS));
         buttonsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+
 
         // Play Button
         playButton = new JButton("Play");
@@ -175,14 +198,38 @@ public class ScrabbleGUI extends JFrame implements Serializable {
         playButton.addActionListener(e -> {
             int numHumanPlayers = Integer.parseInt((String) playerComboBox.getSelectedItem());
             int numAIPlayers = Integer.parseInt((String) aiPlayerComboBox.getSelectedItem());
+            String boardChoice = (String) boardComboBox.getSelectedItem();
 
             // Ensure the total number of players is not greater than 4
             if (numHumanPlayers + numAIPlayers > 4) {
                 JOptionPane.showMessageDialog(this, "The total number of players cannot exceed 4.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+            switch (boardChoice) {
+                case "Board 1":
+                    inputStream = getClass().getClassLoader().getResourceAsStream("board1.xml");
+
+                    break;
+                case "Board 2":
+                    inputStream = getClass().getClassLoader().getResourceAsStream("board2.xml");
+                    break;
+                case "Board 3":
+                    inputStream = getClass().getClassLoader().getResourceAsStream("board3.xml");
+                    break;
+                case "Board 4":
+                    inputStream = getClass().getClassLoader().getResourceAsStream("board4.xml");
+                    break;
+                case "Board 5":
+                    inputStream = getClass().getClassLoader().getResourceAsStream("board5.xml");
+                    break;
+                default:
+                    inputStream = null; // Use default board
+            }
+
             showGamePanel();
-            controller.startGame(numHumanPlayers, numAIPlayers);
+            controller.startGame(Integer.parseInt((String) playerComboBox.getSelectedItem()),
+                    Integer.parseInt((String) aiPlayerComboBox.getSelectedItem()),
+                    inputStream);
             endGameMenuItem.setEnabled(true);
         });
 

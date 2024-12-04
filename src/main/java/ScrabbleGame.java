@@ -1,3 +1,4 @@
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.*;
 
@@ -27,6 +28,10 @@ import java.util.*;
  *
  * @author Muhammad Maisam
  * @version v2.1 12 November 2024
+ *
+ * @author Shenhao Gong
+ * @version 2024-12-04
+ * added overload version of ScrabbleGame which will pass an xml file in
  */
 public class ScrabbleGame implements Serializable {
     private Board board;
@@ -34,7 +39,7 @@ public class ScrabbleGame implements Serializable {
     private final List<Player> players;
     private int currentPlayerIndex;
     private WordDictionary dictionary;
-    private Word lastPlacedWord;
+    //private Word lastPlacedWord;
     private List<Position> lastPlacedTiles = new ArrayList<>();
     private GameListener gameListener;
     private final GameController gameController;
@@ -45,6 +50,24 @@ public class ScrabbleGame implements Serializable {
     public ScrabbleGame(GameController gameController) {
         this.gameController = gameController;
         board = new Board();
+        tileBag = new Bag();
+        players = new ArrayList<>();
+        dictionary = new WordDictionary();
+        currentPlayerIndex = 0;
+    }
+
+    public ScrabbleGame(GameController gameController, InputStream boardStream) {
+        this.gameController = gameController;
+
+
+        if (boardStream != null) {
+            board = new Board(boardStream);
+            board.loadPremiumSquaresFromXML(boardStream); // Load custom premium squares from XML
+        } else {
+            board = new Board();
+            board.setDefaultPremiumSquares(); // Set default premium squares
+        }
+
         tileBag = new Bag();
         players = new ArrayList<>();
         dictionary = new WordDictionary();

@@ -1,0 +1,44 @@
+<board>
+
+    <square row="0" col="2" type="DOUBLE_WORD" />
+    <square row="0" col="3" type="DOUBLE_WORD" />
+    <square row="0" col="4" type="NORMAL" />
+    <square row="0" col="5" type="DOUBLE_WORD" />
+    <square row="0" col="6" type="DOUBLE_WORD" />
+
+    <square row="5" col="1" type="TRIPLE_WORD" />
+    <square row="5" col="2" type="TRIPLE_WORD" />
+    <square row="6" col="1" type="TRIPLE_WORD" />
+    <square row="6" col="2" type="TRIPLE_WORD" />
+
+    <square row="9" col="3" type="DOUBLE_LETTER" />
+    <square row="10" col="3" type="DOUBLE_LETTER" />
+    <square row="11" col="3" type="DOUBLE_LETTER" />
+    <square row="12" col="3" type="DOUBLE_LETTER" />
+
+
+    <square row="7" col="6" type="TRIPLE_LETTER" />
+    <square row="7" col="7" type="TRIPLE_LETTER" />
+    <square row="7" col="8" type="TRIPLE_LETTER" />
+
+    <square row="5" col="12" type="TRIPLE_WORD" />
+    <square row="5" col="13" type="TRIPLE_WORD" />
+    <square row="6" col="12" type="TRIPLE_WORD" />
+    <square row="6" col="13" type="TRIPLE_WORD" />
+
+    <square row="14" col="0" type="TRIPLE_WORD" />
+    <square row="14" col="1" type="TRIPLE_WORD" />
+    <square row="14" col="2" type="TRIPLE_WORD" />
+    <square row="14" col="3" type="TRIPLE_WORD" />
+    <square row="14" col="4" type="TRIPLE_WORD" />
+    <square row="14" col="5" type="TRIPLE_WORD" />
+    <square row="14" col="6" type="TRIPLE_WORD" />
+    <square row="14" col="7" type="TRIPLE_WORD" />
+    <square row="14" col="8" type="TRIPLE_WORD" />
+    <square row="14" col="9" type="TRIPLE_WORD" />
+    <square row="14" col="10" type="TRIPLE_WORD" />
+    <square row="14" col="11" type="TRIPLE_WORD" />
+    <square row="14" col="12" type="TRIPLE_WORD" />
+    <square row="14" col="13" type="TRIPLE_WORD" />
+    <square row="14" col="14" type="TRIPLE_WORD" />
+</board>

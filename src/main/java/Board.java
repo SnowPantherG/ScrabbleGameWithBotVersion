@@ -1,3 +1,8 @@
+import org.w3c.dom.*;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.Serializable;
@@ -17,6 +22,11 @@ import java.io.Serializable;
  * @author Shenhao Gong
  * @version 2024-12-03
  * implement Serializable for saving the gameStates
+ * @version 2024-12-04
+ * change setPremiumSquare to adapt special board pass in
+ * move original setPremiumSquare() to setDefaultPremiumSquare()
+ *
+ *
  */
 
 public class Board implements Serializable {
@@ -33,8 +43,16 @@ public class Board implements Serializable {
         squareTypes = new SquareType[BOARD_SIZE][BOARD_SIZE];
         placedWords = new ArrayList<>();
         fixedTiles = new boolean[BOARD_SIZE][BOARD_SIZE];
-        initializeSquareTypes();
+        initializeSquareTypes(null);
     }
+    public Board(InputStream boardStream) {
+        board = new Tile[BOARD_SIZE][BOARD_SIZE];
+        squareTypes = new SquareType[BOARD_SIZE][BOARD_SIZE];
+        placedWords = new ArrayList<>();
+        fixedTiles = new boolean[BOARD_SIZE][BOARD_SIZE];
+        initializeSquareTypes(boardStream);
+    }
+
     public char getSquare(int row, int col) {
         return board[row][col].getLetter();
     }
@@ -177,7 +195,7 @@ public class Board implements Serializable {
         return fixedTiles[row][col];
     }
 
-    private void initializeSquareTypes() {
+    private void initializeSquareTypes(InputStream boardStream) {
         // Initialize all squares to NORMAL by default
         for (int row = 0; row < BOARD_SIZE; row++) {
             for (int col = 0; col < BOARD_SIZE; col++) {
@@ -186,10 +204,63 @@ public class Board implements Serializable {
         }
 
         //Set the premium squares
-        setPremiumSquares();
+        setPremiumSquares(boardStream);
     }
 
-    private void setPremiumSquares() {
+    private void setPremiumSquares(InputStream boardStream) {
+        // If no InputStream is provided, use the default premium square layout
+        if (boardStream == null) {
+            setDefaultPremiumSquares();
+            return;
+        }
+
+        try {
+            // Attempt to load the premium squares from the provided InputStream
+            loadPremiumSquaresFromXML(boardStream);
+        } catch (Exception e) {
+            System.out.println("Failed to load custom premium squares: " + e.getMessage());
+            System.out.println("Falling back to default premium squares.");
+            setDefaultPremiumSquares(); // Fallback to default layout if loading fails
+        }
+    }
+
+
+    public void loadPremiumSquaresFromXML(InputStream inputStream) {
+        try {
+            // Create a document builder
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+
+            // Parse the XML from the InputStream
+            Document document = builder.parse(inputStream);
+            document.getDocumentElement().normalize();
+
+            // Extract all <square> elements
+            NodeList squareNodes = document.getElementsByTagName("square");
+            for (int i = 0; i < squareNodes.getLength(); i++) {
+                Node node = squareNodes.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    Element element = (Element) node;
+
+                    // Extract row, column, and type attributes
+                    int row = Integer.parseInt(element.getAttribute("row"));
+                    int col = Integer.parseInt(element.getAttribute("col"));
+                    String type = element.getAttribute("type");
+
+                    // Map the type to the corresponding SquareType
+                    SquareType squareType = SquareType.valueOf(type);
+                    squareTypes[row][col] = squareType; // Update the board
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error parsing XML file: " + e.getMessage());
+        }
+    }
+
+
+
+
+    public void setDefaultPremiumSquares() {
         // Define the positions of premium squares based on Scrabble rules
 
         // Triple Word (TW) - Dark Red

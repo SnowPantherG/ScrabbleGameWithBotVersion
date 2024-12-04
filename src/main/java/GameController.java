@@ -12,6 +12,10 @@ import java.util.List;
  * @author Shenhao Gong
  * @version 2024.11.09
  * updated version for implement GUI
+ *
+ * @author Shenhao Gong
+ * @version 2024-12-04
+ * added save load game function, added situation if BoardStream passed in
  */
 public class GameController implements GameListener,Serializable{
     private ScrabbleGame game;
@@ -24,13 +28,21 @@ public class GameController implements GameListener,Serializable{
         gui.setVisible(true);
     }
 
-    public void startGame(int numHumanPlayers, int numAIPlayers) {
+    public void startGame(int numHumanPlayers, int numAIPlayers, InputStream boardStream) {
         int totalPlayers = numHumanPlayers + numAIPlayers;
-
         // Ensure that the total number of players does not exceed 4
         if (totalPlayers > 4) {
             throw new IllegalArgumentException("The total number of players cannot exceed 4.");
         }
+
+        // Reinitialize the game with the specified board configuration
+        if (boardStream != null) {
+            this.game = new ScrabbleGame(this, boardStream); // Pass custom board stream
+        } else {
+            this.game = new ScrabbleGame(this); // Default board
+        }
+
+        game.setGameListener(this);
 
         // Start the game with the specified number of human and AI players
         game.play(numHumanPlayers, numAIPlayers);
@@ -41,8 +53,8 @@ public class GameController implements GameListener,Serializable{
         gui.updateScoreboard(game.getPlayers());
         gui.showMessage("Game started with " + numHumanPlayers + " human players and " + numAIPlayers + " AI players.");
         gui.enableSaveLoad();
-        //game.getGameStateStack().push(new GameState(game.getBoard(), game.getPlayers(), game.getCurrentPlayerIndex()));
     }
+
 
     public void checkWord() {
         List<WordInfo> newWords = game.getNewWordsFormed(false, null);

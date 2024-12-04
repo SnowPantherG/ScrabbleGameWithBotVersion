@@ -1,0 +1,15 @@
+<board>
+    <square row="0" col="0" type="TRIPLE_WORD" />
+    <square row="0" col="7" type="TRIPLE_WORD" />
+    <square row="0" col="14" type="TRIPLE_WORD" />
+    <square row="7" col="0" type="TRIPLE_WORD" />
+    <square row="7" col="14" type="TRIPLE_WORD" />
+    <square row="14" col="0" type="TRIPLE_WORD" />
+    <square row="14" col="7" type="TRIPLE_WORD" />
+    <square row="14" col="14" type="TRIPLE_WORD" />
+    <square row="7" col="7" type="DOUBLE_WORD" />
+    <square row="5" col="5" type="TRIPLE_LETTER" />
+    <square row="5" col="9" type="TRIPLE_LETTER" />
+    <square row="9" col="5" type="TRIPLE_LETTER" />
+    <square row="9" col="9" type="TRIPLE_LETTER" />
+</board>
