@@ -4,6 +4,8 @@ src/META-INF
 !**/src/main/**/out/
 !**/src/test/**/out/
 .idea/
+target/
+game_state.dat
 scrabbleGame/
 *.iml
 ### Eclipse ###
