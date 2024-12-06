@@ -1,7 +1,15 @@
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Represents the state of a Scrabble board, including tiles, fixed tiles,
+ * square types, and placed words. This class provides methods to retrieve
+ * board-related information in a serializable and immutable manner, ensuring
+ * compatibility with game saving and loading.
+ *
+ * @version 2024-12-04
+ * @author Shenhao Gong
+ */
 public class BoardState implements Serializable {
     private static final long serialVersionUID = 1L;
 

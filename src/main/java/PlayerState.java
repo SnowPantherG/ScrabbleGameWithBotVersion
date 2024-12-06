@@ -1,6 +1,12 @@
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+/**
+ * Represents the state of player states, include their name, socre, if it is AI player and tiles on their rack
+ *
+ * @version 2024-12-04
+ * @author Shenhao Gong
+ */
 
 public class PlayerState implements Serializable {
     private static final long serialVersionUID = 1L;

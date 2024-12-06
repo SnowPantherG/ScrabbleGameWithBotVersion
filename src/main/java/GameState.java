@@ -1,7 +1,14 @@
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * Represents the state of a Scrabble game, including the board state,
+ * player states, turn order, and other game-related data. This class
+ * is used for saving and restoring the game state during gameplay.
+ *
+ * @version 2024-12-04
+ * @author Shenhao Gong
+ */
 public class GameState implements Serializable {
     private static final long serialVersionUID = 1L;
 
